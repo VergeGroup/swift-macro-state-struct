@@ -225,4 +225,44 @@ struct Tests {
     )
   }
 
+  @Test
+  func tracking_concurrent_access() async throws {
+
+    try await withThrowingTaskGroup(of: Void.self) { group in
+      group.addTask {
+        var original = MyState.init()
+        let result1 = original.tracking {
+          original.height = 100
+        }
+
+        #expect(
+          result1.graph.prettyPrint() == """
+            StructTransactionTests.MyState {
+              height+
+            }
+            """
+        )
+      }
+
+      group.addTask {
+        var original = MyState.init()
+        let result2 = original.tracking {
+          original.nested.name = "AAA"
+        }
+
+        #expect(
+          result2.graph.prettyPrint() == """
+            StructTransactionTests.MyState {
+              nested+ {
+                name+
+              }
+            }
+            """
+        )
+      }
+
+      try await group.waitForAll()
+    }
+  }
+
 }

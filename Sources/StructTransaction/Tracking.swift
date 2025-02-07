@@ -12,6 +12,7 @@ extension Array {
 
 public final class _TrackingContext: @unchecked Sendable {
 
+  @inlinable
   public var path: PropertyPath? {
     get {
       pathBox.withLockUnchecked {
