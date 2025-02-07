@@ -1,8 +1,8 @@
 import StructTransaction
 import Testing
 
-@Suite("Tests")
-struct Tests {
+@Suite("TrackingTests")
+struct TrackingTests {
 
   @Test
   func tracking_stored_property() {
