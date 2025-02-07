@@ -72,25 +72,6 @@ final class TrackingMacroTests: XCTestCase {
 
       extension MyState: TrackingObject {
       }
-
-      extension MyState {
-
-        func _tracking_propagate(path: PropertyPath) {
-          _tracking_context.path = path
-          (stored_0 as? TrackingObject)?._tracking_propagate(
-        path: path.pushed(.init("stored_0"))
-          )
-          (stored_1 as? TrackingObject)?._tracking_propagate(
-            path: path.pushed(.init("stored_1"))
-          )
-          (stored_2 as? TrackingObject)?._tracking_propagate(
-            path: path.pushed(.init("stored_2"))
-          )
-          (height as? TrackingObject)?._tracking_propagate(
-            path: path.pushed(.init("height"))
-          )
-        }
-      }
       """
     }
 

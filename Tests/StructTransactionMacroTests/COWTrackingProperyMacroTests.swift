@@ -38,12 +38,14 @@ final class COWTrackingProperyMacroTests: XCTestCase {
         
         private var stored_0: Int = 18 {
           _read {
+            (_backing_stored_0.value as? TrackingObject)?._tracking_context.path = _tracking_context.path?.pushed(.init("stored_0"))
             _Tracking._tracking_modifyStorage {
               $0.accessorRead(path: _tracking_context.path?.pushed(.init("stored_0")))
             }
             yield _backing_stored_0.value
           }
           set {
+            (_backing_stored_0.value as? TrackingObject)?._tracking_context.path = _tracking_context.path?.pushed(.init("stored_0"))
             _Tracking._tracking_modifyStorage {
               $0.accessorSet(path: _tracking_context.path?.pushed(.init("stored_0")))
             }
@@ -55,6 +57,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
 
           }
           _modify {
+            (_backing_stored_0.value as? TrackingObject)?._tracking_context.path = _tracking_context.path?.pushed(.init("stored_0"))
             _Tracking._tracking_modifyStorage {
               $0.accessorModify(path: _tracking_context.path?.pushed(.init("stored_0")))
             }
