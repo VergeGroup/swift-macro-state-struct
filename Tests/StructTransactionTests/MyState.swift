@@ -520,6 +520,8 @@ struct MyState {
   var name: String
 
   var edge: Int = 0
+  
+  var array: [Int] = []
 
   var computedName: String {
     "Mr. " + name
@@ -539,7 +541,7 @@ struct MyState {
     }
   }
 
-  var nested: Nested = .init(name: "hello")
+  var nested: Nested = .init(name: "")
   var nestedAttached: NestedAttached = .init(name: "")
 
   @Tracking

@@ -37,10 +37,6 @@ public struct PropertyNode: Equatable {
     apply(components: path.components, status: .write)
   }
 
-  public mutating func apply(path: PropertyPath) {
-    apply(components: path.components, status: [])
-  }
-
   private mutating func apply(
     components: some RandomAccessCollection<PropertyPath.Component>, status: Status
   ) {

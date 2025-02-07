@@ -9,9 +9,9 @@ struct GraphTests {
     
     var node = PropertyNode(name: "1")
     
-    node.apply(path: PropertyPath().pushed(.init("1")).pushed(.init("1")).pushed(.init("1")))
-    node.apply(path: PropertyPath().pushed(.init("1")).pushed(.init("2")).pushed(.init("1")))
-    node.apply(path: PropertyPath().pushed(.init("1")).pushed(.init("1")).pushed(.init("2")))
+    node.applyAsWrite(path: PropertyPath().pushed(.init("1")).pushed(.init("1")).pushed(.init("1")))
+    node.applyAsWrite(path: PropertyPath().pushed(.init("1")).pushed(.init("2")).pushed(.init("1")))
+    node.applyAsWrite(path: PropertyPath().pushed(.init("1")).pushed(.init("1")).pushed(.init("2")))
     
     print(node.prettyPrint())
     

@@ -66,7 +66,6 @@ public struct PropertyPath: Equatable {
 
 public protocol TrackingObject {
   var _tracking_context: _TrackingContext { get }
-  //  func _tracking_propagate(path: PropertyPath)
 }
 
 extension TrackingObject {
@@ -101,15 +100,12 @@ public struct TrackingResult: Equatable {
   }
 
   public var graph: PropertyNode = .root
-  public var readGraph: PropertyNode = .root
-  public var writeGraph: PropertyNode = .root
 
   public mutating func accessorRead(path: PropertyPath?) {
     guard let path = path else {
       return
     }
     graph.applyAsRead(path: path)
-    readGraph.apply(path: path)
   }
 
   public mutating func accessorSet(path: PropertyPath?) {
@@ -117,7 +113,6 @@ public struct TrackingResult: Equatable {
       return
     }
     graph.applyAsWrite(path: path)
-    writeGraph.apply(path: path)
   }
 
   public mutating func accessorModify(path: PropertyPath?) {
@@ -125,7 +120,6 @@ public struct TrackingResult: Equatable {
       return
     }
     graph.applyAsWrite(path: path)
-    writeGraph.apply(path: path)
   }
 }
 
