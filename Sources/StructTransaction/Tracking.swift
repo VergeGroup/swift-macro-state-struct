@@ -51,9 +51,9 @@ public struct PropertyPath: Equatable {
   public init() {
 
   }
-
-  public static var root: PropertyPath {
-    let path = PropertyPath().pushed(.init("root"))
+  
+  public static func root<T>(of type: T.Type) -> PropertyPath {
+    let path = PropertyPath().pushed(.init(_typeName(type)))
     return path
   }
 
@@ -75,13 +75,21 @@ extension TrackingObject {
     defer {
       endTracking()
     }
-    return withTracking {
-      applier()
+    let
+    current = Thread.current.threadDictionary.tracking
+    defer {
+      Thread.current.threadDictionary.tracking = current
     }
+    
+    Thread.current.threadDictionary.tracking = TrackingResult(graph: .init(name: _typeName(type(of: self))))
+    applier()
+    let result = Thread.current.threadDictionary.tracking!
+    return result
+    
   }
 
   private func startTracking() {
-    _tracking_context.path = .root
+    _tracking_context.path = .root(of: Self.self)
   }
 
   private func endTracking() {
@@ -91,15 +99,11 @@ extension TrackingObject {
 
 public struct TrackingResult: Equatable {
 
-  public struct Identifier: Hashable {
-    public let pathString: String
-
-    public init(_ value: String) {
-      self.pathString = value
-    }
+  public var graph: PropertyNode
+  
+  public init(graph: PropertyNode) {
+    self.graph = graph
   }
-
-  public var graph: PropertyNode = .root
 
   public mutating func accessorRead(path: PropertyPath?) {
     guard let path = path else {
@@ -148,16 +152,4 @@ public enum _Tracking {
     }
     modifier(&Thread.current.threadDictionary.tracking!)
   }
-}
-
-private func withTracking(_ perform: () -> Void) -> TrackingResult {
-  let current = Thread.current.threadDictionary.tracking
-  defer {
-    Thread.current.threadDictionary.tracking = current
-  }
-
-  Thread.current.threadDictionary.tracking = TrackingResult()
-  perform()
-  let result = Thread.current.threadDictionary.tracking!
-  return result
 }

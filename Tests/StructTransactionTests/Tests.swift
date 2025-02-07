@@ -15,7 +15,7 @@ struct Tests {
 
     #expect(
       result.graph.prettyPrint() == """
-        root {
+        StructTransactionTests.MyState {
           height+
         }
         """
@@ -34,7 +34,7 @@ struct Tests {
 
     #expect(
       result.graph.prettyPrint() == """
-        root {
+        StructTransactionTests.MyState {
           nested+ {
             name+
           }
@@ -55,7 +55,7 @@ struct Tests {
 
     #expect(
       result.graph.prettyPrint() == """
-        root {
+        StructTransactionTests.MyState {
           nested- {
             name-
           }
@@ -76,7 +76,7 @@ struct Tests {
 
     #expect(
       result.graph.prettyPrint() == """
-        root {
+        StructTransactionTests.Nesting {
           _1- {
             _2- {
               value-
@@ -98,7 +98,7 @@ struct Tests {
 
     #expect(
       result.graph.prettyPrint() == """
-        root {
+        StructTransactionTests.Nesting {
           _1+ {
             _1+ {
               value+
@@ -122,7 +122,7 @@ struct Tests {
 
     #expect(
       result.graph.prettyPrint() == """
-        root {
+        StructTransactionTests.Nesting {
           _1- {
             _1- {
               value-
@@ -145,7 +145,7 @@ struct Tests {
 
     #expect(
       result.graph.prettyPrint() == """
-        root {
+        StructTransactionTests.Nesting {
           _1+
         }
         """
@@ -164,7 +164,7 @@ struct Tests {
 
     #expect(
       result.graph.prettyPrint() == """
-        root {
+        StructTransactionTests.Nesting {
           _1+ {
             _1+
           }
@@ -193,7 +193,7 @@ struct Tests {
 
     #expect(
       result.graph.prettyPrint() == """
-        root {
+        StructTransactionTests.Nesting {
           _1-
         }
         """
@@ -216,7 +216,7 @@ struct Tests {
 
     #expect(
       result.graph.prettyPrint() == """
-        root {
+        StructTransactionTests.MyState {
           nested+ {
             name+
           }

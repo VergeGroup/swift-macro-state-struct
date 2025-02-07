@@ -12,10 +12,6 @@ public struct PropertyNode: Equatable {
     public static let write = Status(rawValue: 1 << 1)
   }
 
-  public static var root: PropertyNode {
-    .init(name: "root")
-  }
-
   public let name: String
   public var status: Status = []
 
