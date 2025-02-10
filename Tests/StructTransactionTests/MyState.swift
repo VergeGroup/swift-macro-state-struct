@@ -522,6 +522,8 @@ struct MyState {
   var edge: Int = 0
   
   var array: [Int] = []
+  
+  var dictionary: [String: Int] = [:]
 
   var computedName: String {
     "Mr. " + name
@@ -552,6 +554,7 @@ struct MyState {
     }
 
     var name = ""
+    var age = 10
   }
 
   struct NestedAttached {
