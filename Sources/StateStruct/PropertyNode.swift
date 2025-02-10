@@ -143,19 +143,8 @@ extension PropertyNode {
     writeGraph.shakeAsWrite()
     readGraph.shakeAsRead()
     
-    print("""
-writeGraph: 
-\(writeGraph.prettyPrint())
-
-readGraph: 
-\(readGraph.prettyPrint())
-""")
-
-    func _hasChanges(writeGraph: borrowing PropertyNode, readGraph: borrowing PropertyNode) -> Bool
-    {
-
-      print("writeGraph: \(writeGraph.name) readGraph: \(readGraph.name)")
-      
+    func _hasChanges(writeGraph: borrowing PropertyNode, readGraph: borrowing PropertyNode) -> Bool {
+          
       if writeGraph.name == readGraph.name {
         
         if readGraph.nodes.isEmpty {
