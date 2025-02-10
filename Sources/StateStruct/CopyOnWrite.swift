@@ -1,7 +1,6 @@
 
-public final class _Backing_COW_Storage<Value>: @unchecked Sendable {
+public final class _BackingStorage<Value>: @unchecked Sendable {
   
-  public var parentKeyPath: AnyKeyPath?
   public var value: Value
   
   public init(_ value: consuming Value) {
@@ -38,7 +37,7 @@ private struct After {
     }
   }
   
-  private var _cow_value: _Backing_COW_Storage<Int>
+  private var _cow_value: _BackingStorage<Int>
   
 }
 

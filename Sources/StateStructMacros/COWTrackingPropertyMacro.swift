@@ -48,10 +48,10 @@ extension COWTrackingPropertyMacro: PeerMacro {
       .renamingIdentifier(with: "_backing_")
       .withPrivateModifier()
       .modifyingTypeAnnotation({ type in
-        return "_Backing_COW_Storage<\(type.trimmed)>"
+        return "_BackingStorage<\(type.trimmed)>"
       })
       .modifyingInit({ initializer in                
-        return .init(value: "_Backing_COW_Storage.init(\(initializer.value))" as ExprSyntax)        
+        return .init(value: "_BackingStorage.init(\(initializer.value))" as ExprSyntax)        
       })
     
     _variableDecl.leadingTrivia = .spaces(2)

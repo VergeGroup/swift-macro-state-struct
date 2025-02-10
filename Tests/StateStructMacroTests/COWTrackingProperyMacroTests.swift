@@ -67,7 +67,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
             yield &_backing_stored_0.value
           }
         }
-          private var _backing_stored_0: _Backing_COW_Storage<Int> = _Backing_COW_Storage.init(18)
+          private var _backing_stored_0: _BackingStorage<Int> = _BackingStorage.init(18)
 
         func compute() {
         }
