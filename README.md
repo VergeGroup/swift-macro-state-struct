@@ -108,12 +108,3 @@ Test Cases in UpdatingTests.swift:
 
 Each test case demonstrates how StateStruct intelligently tracks dependencies and detects changes in nested structures. The examples show real code snippets from the test suite with clear expected outcomes.
 
-
-## Conclusion
-StateStruct offers a robust and automated solution for state management in Swift by combining:
-- **Dependency Tracking:** Automatically capturing property access flows.
-- **Change Detection:** Comparing read and write graphs to trigger updates only when necessary.
-- **Copy-on-Write Mechanism:** Efficiently managing state modifications.
-- **Swift Macros:** Simplifying the integration of tracking code to reduce boilerplate.
-
-This overview provides a clear understanding of the architecture and main features of the StateStruct codebase, laying a solid foundation for further exploration and project integration.
