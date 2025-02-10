@@ -1,5 +1,5 @@
 import MacroTesting
-import StructTransactionMacros
+import StateStructMacros
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
 import XCTest

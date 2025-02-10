@@ -10,22 +10,14 @@
 @attached(
   member, names: named(_tracking_context)
 )
-public macro Tracking() = #externalMacro(module: "StructTransactionMacros", type: "TrackingMacro")
+public macro Tracking() = #externalMacro(module: "StateStructMacros", type: "TrackingMacro")
 
 @attached(
   accessor,
   names: named(willSet)
 )
 public macro TrackingIgnored() =
-  #externalMacro(module: "StructTransactionMacros", type: "TrackingIgnoredMacro")
-
-@attached(
-  accessor,
-  names: named(init), named(get), named(set), named(_modify)
-)
-@attached(peer, names: prefixed(`_backing_`))
-public macro TrackingProperty() =
-  #externalMacro(module: "StructTransactionMacros", type: "TrackingPropertyMacro")
+  #externalMacro(module: "StateStructMacros", type: "TrackingIgnoredMacro")
 
 @attached(
   accessor,
@@ -33,7 +25,7 @@ public macro TrackingProperty() =
 )
 @attached(peer, names: prefixed(`_backing_`))
 public macro COWTrackingProperty() =
-  #externalMacro(module: "StructTransactionMacros", type: "COWTrackingPropertyMacro")
+  #externalMacro(module: "StateStructMacros", type: "COWTrackingPropertyMacro")
 
 #if DEBUG
   @Tracking

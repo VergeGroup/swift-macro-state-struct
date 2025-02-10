@@ -1,5 +1,5 @@
 import Testing
-import StructTransaction
+import StateStruct
 
 @Suite("GraphTests")
 struct GraphTests {

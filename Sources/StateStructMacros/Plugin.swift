@@ -7,7 +7,6 @@ import SwiftSyntaxMacros
 struct Plugin: CompilerPlugin {
   let providingMacros: [Macro.Type] = [
     TrackingMacro.self,
-    TrackingPropertyMacro.self,
     COWTrackingPropertyMacro.self,
     TrackingIgnoredMacro.self,
   ]

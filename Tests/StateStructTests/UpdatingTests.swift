@@ -1,4 +1,4 @@
-import StructTransaction
+import StateStruct
 import Testing
 
 @Suite("UpdatingTests")

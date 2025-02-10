@@ -1,4 +1,4 @@
-import StructTransaction
+import StateStruct
 
 @Tracking
 struct Nesting {
