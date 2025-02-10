@@ -15,7 +15,7 @@ struct TrackingTests {
 
     #expect(
       result.graph.prettyPrint() == """
-        StructTransactionTests.MyState {
+        StateStructTests.MyState {
           height+(1)
         }
         """
@@ -34,7 +34,7 @@ struct TrackingTests {
 
     #expect(
       result.graph.prettyPrint() == """
-        StructTransactionTests.MyState {
+        StateStructTests.MyState {
           nested+(1) {
             name+(1)
           }
@@ -55,7 +55,7 @@ struct TrackingTests {
 
     #expect(
       result.graph.prettyPrint() == """
-        StructTransactionTests.MyState {
+        StateStructTests.MyState {
           nested-(1) {
             name-(1)
           }
@@ -76,7 +76,7 @@ struct TrackingTests {
 
     #expect(
       result.graph.prettyPrint() == """
-        StructTransactionTests.Nesting {
+        StateStructTests.Nesting {
           _1-(1) {
             _2-(1) {
               value-(1)
@@ -98,7 +98,7 @@ struct TrackingTests {
 
     #expect(
       result.graph.prettyPrint() == """
-        StructTransactionTests.Nesting {
+        StateStructTests.Nesting {
           _1+(1) {
             _1+(1) {
               value+(1)
@@ -122,7 +122,7 @@ struct TrackingTests {
 
     #expect(
       result.graph.prettyPrint() == """
-        StructTransactionTests.Nesting {
+        StateStructTests.Nesting {
           _1-(1) {
             _1-(1) {
               value-(1)
@@ -145,7 +145,7 @@ struct TrackingTests {
 
     #expect(
       result.graph.prettyPrint() == """
-        StructTransactionTests.Nesting {
+        StateStructTests.Nesting {
           _1+(1)
         }
         """
@@ -164,7 +164,7 @@ struct TrackingTests {
 
     #expect(
       result.graph.prettyPrint() == """
-        StructTransactionTests.Nesting {
+        StateStructTests.Nesting {
           _1+(1) {
             _1+(1)
           }
@@ -186,7 +186,7 @@ struct TrackingTests {
     
     #expect(
       result.graph.shakedAsRead().prettyPrint() == """
-        StructTransactionTests.Nesting {
+        StateStructTests.Nesting {
           _1-(2)
         }
         """
@@ -213,7 +213,7 @@ struct TrackingTests {
 
     #expect(
       result.graph.prettyPrint() == """
-        StructTransactionTests.Nesting {
+        StateStructTests.Nesting {
           _1-(1)
         }
         """
@@ -236,7 +236,7 @@ struct TrackingTests {
 
     #expect(
       result.graph.prettyPrint() == """
-        StructTransactionTests.MyState {
+        StateStructTests.MyState {
           nested+(1) {
             name+(1)
           }
@@ -257,7 +257,7 @@ struct TrackingTests {
 
         #expect(
           result1.graph.prettyPrint() == """
-            StructTransactionTests.MyState {
+            StateStructTests.MyState {
               height+(1)
             }
             """
@@ -272,7 +272,7 @@ struct TrackingTests {
 
         #expect(
           result2.graph.prettyPrint() == """
-            StructTransactionTests.MyState {
+            StateStructTests.MyState {
               nested+(1) {
                 name+(1)
               }

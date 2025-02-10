@@ -198,7 +198,7 @@ struct UpdatingTests {
 
     #expect(
       result.graph.sorted().prettyPrint() == """
-        StructTransactionTests.Nesting {
+        StateStructTests.Nesting {
           _1-(1) {
             _1-(1) {
               value-(1)
