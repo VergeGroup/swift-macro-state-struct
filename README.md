@@ -33,6 +33,7 @@ struct MyState {
     var name: String = ""
     var nested: Nested = .init(name: "")
 
+    @Tracking
     struct Nested {
         var name: String = ""
         var age: Int = 18
