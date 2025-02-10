@@ -513,7 +513,11 @@ struct MyState {
   init() {
     self.name = ""
   }
-
+  
+  func customDescription() -> String {
+    "\(height),\(age)"
+  }
+    
   var height: Int = 0
 
   var age: Int = 18

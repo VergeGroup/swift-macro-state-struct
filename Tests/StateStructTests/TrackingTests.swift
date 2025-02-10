@@ -66,6 +66,43 @@ struct TrackingTests {
   }
 
   @Test
+  func read_computed_property() {
+
+    let original = MyState.init()
+
+    let result = original.tracking {
+      _ = original.computedName
+    }
+
+    #expect(
+      result.graph.prettyPrint() == """
+        StateStructTests.MyState {
+          name-(1)
+        }
+        """
+    )
+
+  }
+  
+  @Test
+  func read_over_function() {
+    let original = MyState.init()
+    
+    let result = original.tracking {
+      _ = original.customDescription()
+    }
+    
+    #expect(
+      result.graph.prettyPrint() == """
+        StateStructTests.MyState {
+          height-(1)
+          age-(1)
+        }
+        """
+    )
+  }
+
+  @Test
   func tracking_nest() {
 
     let original = Nesting.init()
@@ -176,14 +213,14 @@ struct TrackingTests {
 
   @Test
   func tracking_1() {
-    
+
     let original = Nesting.init()
-    
+
     let result = original.tracking {
       _ = original._1?._1
       _ = original._1
     }
-    
+
     #expect(
       result.graph.shakedAsRead().prettyPrint() == """
         StateStructTests.Nesting {
@@ -191,9 +228,9 @@ struct TrackingTests {
         }
         """
     )
-    
+
   }
-  
+
   /**
    A case of detaching a nested object and then modifying it.
    which means the original object is not modified.
