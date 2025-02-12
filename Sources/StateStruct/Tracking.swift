@@ -10,7 +10,14 @@ extension Array {
 }
 
 
-public final class _TrackingContext: @unchecked Sendable {
+public final class _TrackingContext: @unchecked Sendable, Equatable {
+  
+  public static func == (lhs: _TrackingContext, rhs: _TrackingContext) -> Bool {
+    // ``_TrackingContext`` is used only for embedding into the struct.
+    // It always returns true when checked for equality to prevent
+    // interfering with the actual equality check of the struct.
+    return true
+  }
 
   @inlinable
   public var path: PropertyPath? {
