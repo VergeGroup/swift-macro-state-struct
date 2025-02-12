@@ -23,9 +23,11 @@ extension TrackingMacro: MemberMacro {
     in context: some MacroExpansionContext
   ) throws -> [DeclSyntax] {
     
+    let isPublic = declaration.modifiers.contains(where: { $0.name.tokenKind == .keyword(.public) })
+    
     return [
       """
-      let _tracking_context: _TrackingContext = .init()
+      \(raw: isPublic ? "public" : "internal") let _tracking_context: _TrackingContext = .init()
       """ as DeclSyntax
     ]
   }
@@ -76,15 +78,6 @@ extension TrackingMacro: ExtensionMacro {
       extension \(structDecl.name.trimmed): TrackingObject {      
       }
       """ as DeclSyntax).cast(ExtensionDeclSyntax.self),
-//      ("""
-//      extension \(structDecl.name.trimmed) {
-//      
-//        func _tracking_propagate(path: PropertyPath) {
-//          _tracking_context.path = path
-//          \(raw: operation)
-//        }
-//      }
-//      """ as DeclSyntax).formatted().cast(ExtensionDeclSyntax.self)
     ]
   }
 }

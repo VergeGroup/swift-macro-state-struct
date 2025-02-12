@@ -14,6 +14,66 @@ final class TrackingMacroTests: XCTestCase {
       super.invokeTest()
     }
   }
+  
+  func test_public() {
+    assertMacro {
+      """
+      @Tracking
+      public struct MyState {
+      
+        private var stored_0: Int = 18
+      
+        var stored_1: String
+      
+        let stored_2: Int = 0
+      
+        var age: Int { 0 }
+      
+        var age2: Int {
+          get { 0 }
+          set { }
+        }
+      
+        var height: Int
+      
+        func compute() {
+        }
+      }
+      """
+    } expansion: {
+      """
+      public struct MyState {
+        @COWTrackingProperty
+
+        private var stored_0: Int = 18
+        @COWTrackingProperty
+
+        var stored_1: String
+        @COWTrackingProperty
+
+        let stored_2: Int = 0
+
+        var age: Int { 0 }
+
+        var age2: Int {
+          get { 0 }
+          set { }
+        }
+        @COWTrackingProperty
+
+        var height: Int
+
+        func compute() {
+        }
+
+        public let _tracking_context: _TrackingContext = .init()
+      }
+
+      extension MyState: TrackingObject {
+      }
+      """
+    }
+  }
 
   func test_macro() {
 
@@ -67,7 +127,7 @@ final class TrackingMacroTests: XCTestCase {
         func compute() {
         }
 
-        let _tracking_context: _TrackingContext = .init()
+        internal let _tracking_context: _TrackingContext = .init()
       }
 
       extension MyState: TrackingObject {

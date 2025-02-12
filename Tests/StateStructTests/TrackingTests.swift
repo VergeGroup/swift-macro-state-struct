@@ -250,9 +250,7 @@ struct TrackingTests {
 
     #expect(
       result.graph.prettyPrint() == """
-        StateStructTests.Nesting {
-          _1-(1)
-        }
+        StateStructTests.Nesting
         """
     )
 
