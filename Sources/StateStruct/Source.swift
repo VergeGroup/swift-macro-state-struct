@@ -28,6 +28,12 @@ public macro COWTrackingProperty() =
   #externalMacro(module: "StateStructMacros", type: "COWTrackingPropertyMacro")
 
 #if DEBUG
+
+@Tracking
+struct EquatableState: Equatable {
+  var count: Int = 0
+}
+
   @Tracking
   struct MyState {
 

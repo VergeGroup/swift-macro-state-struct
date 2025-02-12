@@ -9,6 +9,13 @@ public final class _BackingStorage<Value>: @unchecked Sendable {
     
 }
 
+extension _BackingStorage: Equatable where Value: Equatable {
+  public static func == (lhs: _BackingStorage<Value>, rhs: _BackingStorage<Value>) -> Bool {
+    lhs === rhs || lhs.value == rhs.value
+  }  
+}
+
+
 #if DEBUG
 private struct Before {
   
