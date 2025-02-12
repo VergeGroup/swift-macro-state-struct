@@ -71,19 +71,16 @@ public protocol TrackingObject {
 
 extension TrackingObject {
 
-  public func tracking(_ applier: () -> Void) -> TrackingResult {
+  public func tracking(_ applier: () throws -> Void) rethrows -> TrackingResult {
+    let current = Thread.current.threadDictionary.tracking
     startTracking()
     defer {
-      endTracking()
-    }
-    let
-    current = Thread.current.threadDictionary.tracking
-    defer {
       Thread.current.threadDictionary.tracking = current
+      endTracking()
     }
     
     Thread.current.threadDictionary.tracking = TrackingResult(graph: .init(name: _typeName(type(of: self))))
-    applier()
+    try applier()
     let result = Thread.current.threadDictionary.tracking!
     return result
     
