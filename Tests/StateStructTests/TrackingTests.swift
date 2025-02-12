@@ -322,4 +322,25 @@ struct TrackingTests {
     }
   }
 
+  @Test
+  func write_is_empty() {
+    
+    let original = MyState.init()
+     
+    var result = original.tracking {
+      _ = original.nested.name
+            
+      var nested = original.nested
+      nested.name = "AAA"      
+    }
+    
+    result.graph.shakeAsWrite()
+    
+    result.graph.prettyPrint()
+    
+    #expect(
+      result.graph.isEmpty == true
+    )
+    
+  }
 }

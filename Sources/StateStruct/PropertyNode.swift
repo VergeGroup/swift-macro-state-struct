@@ -220,16 +220,22 @@ extension PropertyNode {
 }
 
 extension PropertyNode {
-
-  public mutating func shakeAsWrite() {
-    shake(where: { $0 == .read })
+  
+  public var isEmpty: Bool {
+    nodes.isEmpty
   }
 
-  public mutating func shake(where predicate: (Status) -> Bool) {
+  /**
+   Shake all nodes with `.read` status.
+   */
+  public mutating func shakeAsWrite() {
     
     func modify(_ nodes: inout [PropertyNode]) {
+      nodes.removeAll {
+        $0.status == .read
+      }
       nodes.modify { node in
-        if predicate(node.status) {
+        if node.status == .read {
           node.nodes.removeAll()
         }
         modify(&node.nodes)
@@ -237,7 +243,6 @@ extension PropertyNode {
     }
     
     modify(&nodes)
-    
   }
 
 }
