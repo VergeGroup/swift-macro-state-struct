@@ -71,7 +71,10 @@ public protocol TrackingObject {
 
 extension TrackingObject {
 
-  public func tracking(_ applier: () throws -> Void) rethrows -> TrackingResult {
+  public func tracking(
+    using graph: consuming PropertyNode? = nil,
+    _ applier: () throws -> Void
+  ) rethrows -> TrackingResult {
     let current = Thread.current.threadDictionary.tracking
     startTracking()
     defer {
@@ -79,11 +82,10 @@ extension TrackingObject {
       endTracking()
     }
     
-    Thread.current.threadDictionary.tracking = TrackingResult(graph: .init(name: _typeName(type(of: self))))
+    Thread.current.threadDictionary.tracking = TrackingResult(graph: graph ?? .init(name: _typeName(type(of: self))))
     try applier()
     let result = Thread.current.threadDictionary.tracking!
-    return result
-    
+    return result    
   }
 
   private func startTracking() {
@@ -99,7 +101,7 @@ public struct TrackingResult: Equatable {
 
   public var graph: PropertyNode
   
-  public init(graph: PropertyNode) {
+  public init(graph: consuming PropertyNode) {
     self.graph = graph
   }
 
