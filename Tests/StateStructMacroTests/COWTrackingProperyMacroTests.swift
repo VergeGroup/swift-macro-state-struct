@@ -8,7 +8,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
 
   override func invokeTest() {
     withMacroTesting(
-      isRecording: false,
+      record: false,
       macros: [
         "COWTrackingProperty": COWTrackingPropertyMacro.self,
         "TrackingIgnored": TrackingIgnoredMacro.self,
@@ -35,8 +35,8 @@ final class COWTrackingProperyMacroTests: XCTestCase {
       """
       struct MyState {
 
-        
-        private var stored_0: Int = 18 {
+
+        private var stored_0: Int {
           _read {
             (_backing_stored_0.value as? TrackingObject)?._tracking_context.path = _tracking_context.path?.pushed(.init("stored_0"))
             _Tracking._tracking_modifyStorage {
