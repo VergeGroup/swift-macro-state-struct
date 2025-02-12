@@ -41,12 +41,11 @@ extension COWTrackingPropertyMacro: PeerMacro {
       }
     }
 
-    var _variableDecl = variableDecl
+    var _variableDecl = variableDecl.trimmed
     _variableDecl.attributes = [.init(.init(stringLiteral: "@TrackingIgnored"))]
 
     _variableDecl = _variableDecl
       .renamingIdentifier(with: "_backing_")
-      .withPrivateModifier()
       .modifyingTypeAnnotation({ type in
         return "_BackingStorage<\(type.trimmed)>"
       })
@@ -54,9 +53,7 @@ extension COWTrackingPropertyMacro: PeerMacro {
         return .init(value: "_BackingStorage.init(\(initializer.value))" as ExprSyntax)        
       })
     
-    _variableDecl.leadingTrivia = .spaces(2)
-
-    newMembers.append(_variableDecl.trimmed.formatted(using: .init(indentationWidth: .spaces(2), initialIndentation: [])).as(DeclSyntax.self)!)
+    newMembers.append(DeclSyntax(_variableDecl))
 
     return newMembers
   }
