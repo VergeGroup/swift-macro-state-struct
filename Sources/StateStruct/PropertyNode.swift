@@ -1,5 +1,4 @@
-@DebugDescription
-public struct PropertyNode: Equatable {
+public struct PropertyNode: Equatable, CustomDebugStringConvertible {
 
   public struct Status: OptionSet, Sendable {
     public let rawValue: Int8
@@ -104,6 +103,9 @@ public struct PropertyNode: Equatable {
 
   }
 
+  public var debugDescription: String {
+    prettyPrint()
+  }
 }
 
 // MARK: PrettyPrint
@@ -113,7 +115,6 @@ extension PropertyNode {
   @discardableResult
   public func prettyPrint() -> String {
     let output = prettyPrint(indent: 0)
-    print(output)
     return output
   }
   
