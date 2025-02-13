@@ -98,10 +98,6 @@ public struct PropertyPath: Equatable {
 
 }
 
-public protocol TrackingObject {
-  var _tracking_context: _TrackingContext { get }
-}
-
 extension TrackingObject {
 
   public func tracking(
