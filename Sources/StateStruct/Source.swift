@@ -29,10 +29,21 @@ public macro COWTrackingProperty() =
 
 #if DEBUG
 
-@Tracking
-struct EquatableState: Equatable {
-  var count: Int = 0
-}
+  @Tracking
+  struct LetState {
+
+    let stored_1: Int
+
+    init(stored_1: Int) {
+      self.stored_1 = stored_1
+    }
+
+  }
+
+  @Tracking
+  struct EquatableState: Equatable {
+    var count: Int = 0
+  }
 
   @Tracking
   struct MyState {
