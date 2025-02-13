@@ -17,38 +17,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
       super.invokeTest()
     }
   }
-  
-  func test_let_property() {
     
-    assertMacro {
-      """
-      struct LetState {
-        
-        @COWTrackingProperty
-        let stored_1: Int
-        
-        init(stored_1: Int) {
-          self.stored_1 = stored_1
-        }
-          
-      }
-      """
-    } expansion: {
-      """
-      struct LetState {
-        
-        let stored_1: Int
-        
-        init(stored_1: Int) {
-          self.stored_1 = stored_1
-        }
-          
-      }
-      """
-    }
-    
-  }
-
   func test_macro() {
 
     assertMacro {

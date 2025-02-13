@@ -137,8 +137,8 @@ extension COWTrackingPropertyMacro: AccessorMacro {
        
     accessors.append(readAccessor)
     if !isConstant {
-      accessors.append(modifyAccessor)
       accessors.append(setAccessor)      
+      accessors.append(modifyAccessor)
     }
     if binding.initializer == nil {
       accessors.append(initAccessor)

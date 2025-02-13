@@ -341,4 +341,76 @@ struct TrackingTests {
     )
     
   }
+  
+  @Test
+  func modify_count() {
+    
+    var original = MyState.init()
+    
+    func update(_ value: inout MyState.Nested) {
+      value.name = "AAA"
+      value.name = "AAA"
+      value.age = 100
+    }
+    
+    let result = original.tracking {
+      update(&original.nested)
+    }
+    
+    #expect(
+      result.graph.prettyPrint() == """
+        StateStructTests.MyState {
+          nested+(1) {
+            name+(2)
+            age+(1)
+          }
+        }
+        """
+    )
+  }
+  
+  @Test
+  func modify_count_1() {
+    
+    var original = MyState.init()
+    
+    func update(_ value: inout MyState.Nested) {
+      let r = value.tracking {        
+        value = .init(name: "AAA")
+      }
+      print(r.graph.prettyPrint())
+    }
+    
+    let result = original.tracking {
+      update(&original.nested)
+    }
+    
+    #expect(
+      result.graph.prettyPrint() == """
+        StateStructTests.MyState {
+          nested+(1)
+        }
+        """
+    )
+  }
+  
+  @Test
+  func modify_count_2() {
+    
+    var original = MyState.init()
+    
+    func update(_ value: inout MyState) {
+
+    }
+    
+    let result = original.tracking {
+      update(&original)
+    }
+    
+    #expect(
+      result.graph.prettyPrint() == """
+        StateStructTests.MyState
+        """
+    )
+  }
 }
