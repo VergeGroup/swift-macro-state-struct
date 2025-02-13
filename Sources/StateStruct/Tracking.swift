@@ -10,7 +10,7 @@ extension Array {
 }
 
 
-public final class _TrackingContext: @unchecked Sendable, Equatable {
+public final class _TrackingContext: Sendable, Equatable {
   
   public static func == (lhs: _TrackingContext, rhs: _TrackingContext) -> Bool {
     // ``_TrackingContext`` is used only for embedding into the struct.
@@ -22,19 +22,45 @@ public final class _TrackingContext: @unchecked Sendable, Equatable {
   @inlinable
   public var path: PropertyPath? {
     get {
-      pathBox.withLockUnchecked {
-        $0[Unmanaged.passUnretained(Thread.current).toOpaque()]
+      infoBox.withLockUnchecked {
+        $0[Unmanaged.passUnretained(Thread.current).toOpaque()]?.path
       }
     }
     set {
-      pathBox.withLockUnchecked {
-        $0[Unmanaged.passUnretained(Thread.current).toOpaque()] = newValue
+      infoBox.withLockUnchecked {
+        $0[Unmanaged.passUnretained(Thread.current).toOpaque(), default: .init()].path = newValue
       }
+    }
+  }
+  
+  public var identifier: AnyHashable? {
+    get {
+      infoBox.withLockUnchecked {
+        $0[Unmanaged.passUnretained(Thread.current).toOpaque()]?.identifier
+      }
+    }
+    set {
+      infoBox.withLockUnchecked {
+        $0[Unmanaged.passUnretained(Thread.current).toOpaque(), default: .init()].identifier = newValue
+      }
+    }
+  }
+      
+  @usableFromInline
+  struct Info {
+    @usableFromInline
+    var path: PropertyPath?
+    
+    @usableFromInline
+    var identifier: AnyHashable?
+    
+    @inlinable
+    init() {
     }
   }
 
   @usableFromInline
-  let pathBox: OSAllocatedUnfairLock<[UnsafeMutableRawPointer: PropertyPath]> = .init(
+  let infoBox: OSAllocatedUnfairLock<[UnsafeMutableRawPointer: Info]> = .init(
     uncheckedState: [:]
   )
 

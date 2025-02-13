@@ -49,7 +49,6 @@ final class TrackingMacroTests: XCTestCase {
         @COWTrackingProperty
 
         var stored_1: String
-        @COWTrackingProperty
 
         let stored_2: Int = 0
 
@@ -110,7 +109,6 @@ final class TrackingMacroTests: XCTestCase {
         @COWTrackingProperty
 
         var stored_1: String
-        @COWTrackingProperty
 
         let stored_2: Int = 0
 

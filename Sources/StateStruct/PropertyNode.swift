@@ -17,21 +17,42 @@ public struct PropertyNode: Equatable {
    */
   public let name: String
   
-  public var status: Status = []
+  public var status: Status {
+    var result: Status = []
+    if readCount > 0 {
+      result.insert(.read)
+    }
+    if writeCount > 0 {
+      result.insert(.write)
+    }
+    return result
+  }
   
   /**
    The number of times the final destination was accessed.
    */
-  public var count: Int = 0
+  public private(set) var readCount: UInt16 = 0
+  
+  /**
+   The number of times the final destination was accessed.
+   */
+  public private(set) var writeCount: UInt16 = 0
 
   public init(name: String) {
     self.name = name
   }
 
   public var nodes: [PropertyNode] = []
-
+  
   private mutating func mark(status: Status) {
-    self.status.insert(status)
+    switch status {
+    case .read:
+      readCount &+= 1
+    case .write:
+      writeCount &+= 1
+    default:
+      break
+    }
   }
 
   public mutating func applyAsRead(path: PropertyPath) {
@@ -57,7 +78,6 @@ public struct PropertyNode: Equatable {
     let next = components.dropFirst()
 
     guard !next.isEmpty else {
-      self.count &+= 1
       self.mark(status: status)
       return
     }
@@ -103,23 +123,16 @@ extension PropertyNode {
     
     var statusDescription: String {
       var result = ""
-      if status.contains(.read) {
-        result += "-"
+      if readCount > 0 {
+        result += "-(\(readCount))"
       }
-      if status.contains(.write) {
-        result += "+"
+      if writeCount > 0 {
+        result += "+(\(writeCount))"
       }
       return result
     }
-    
-    var countDescription: String {
-      guard indent > 0 else {
-        return ""
-      }
-      return "(\(count))"
-    }
-    
-    var output = "\(indentation)\(name)\(statusDescription)\(countDescription)"
+     
+    var output = "\(indentation)\(name)\(statusDescription)"
     
     if !nodes.isEmpty {
       output += " {\n"
@@ -262,7 +275,7 @@ extension PropertyNode {
           return
         }
         
-        if node.count != node.totalCount() {
+        if node.readCount != node.totalReadCount() {
           node.nodes.removeAll()
         }
              
@@ -274,9 +287,9 @@ extension PropertyNode {
     
   }
   
-  private func totalCount() -> Int {
-    nodes.reduce(into: 0, {
-      $0 &+= $1.count
+  private func totalReadCount() -> UInt16 {
+    nodes.reduce(into: UInt16(0), {
+      $0 &+= $1.readCount
     })
   }
   
