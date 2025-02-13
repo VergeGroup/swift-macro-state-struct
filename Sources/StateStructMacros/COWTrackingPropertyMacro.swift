@@ -76,6 +76,7 @@ extension COWTrackingPropertyMacro: AccessorMacro {
       return []
     }
 
+    let isConstant = variableDecl.bindingSpecifier.tokenKind == .keyword(.let)
     let propertyName = identifierPattern.identifier.text
     let backingName = "_backing_" + propertyName
 
@@ -131,21 +132,19 @@ extension COWTrackingPropertyMacro: AccessorMacro {
       }
       """
     )
-
-    if binding.initializer == nil {
-      return [
-        initAccessor,
-        readAccessor,
-        setAccessor,
-        modifyAccessor,
-      ]
-    } else {
-      return [
-        readAccessor,
-        setAccessor,
-        modifyAccessor,
-      ]
+    
+    var accessors: [AccessorDeclSyntax] = []
+       
+    accessors.append(readAccessor)
+    if !isConstant {
+      accessors.append(modifyAccessor)
+      accessors.append(setAccessor)      
     }
+    if binding.initializer == nil {
+      accessors.append(initAccessor)
+    }
+
+    return accessors
 
   }
 

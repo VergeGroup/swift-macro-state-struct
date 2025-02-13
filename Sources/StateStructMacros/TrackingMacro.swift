@@ -45,33 +45,6 @@ extension TrackingMacro: ExtensionMacro {
     guard let structDecl = declaration.as(StructDeclSyntax.self) else {
       fatalError()
     }
-
-    let members = declaration.memberBlock.members.compactMap { member -> String? in
-      guard let variableDecl = member.decl.as(VariableDeclSyntax.self) else {
-        return nil
-      }
-      
-      guard let binding = variableDecl.bindings.first,
-            let identifierPattern = binding.pattern.as(IdentifierPatternSyntax.self)
-      else {
-        return nil
-      }
-
-      // 計算プロパティはスキップ
-      if binding.accessorBlock != nil {
-        return nil
-      }
-
-      return identifierPattern.identifier.text
-    }
-    
-    let operation = members.map { member in
-      """
-      (\(member) as? TrackingObject)?._tracking_propagate(
-        path: path.pushed(.init("\(member)"))
-      )
-      """
-    }.joined(separator: "\n")
     
     return [
       ("""
@@ -102,9 +75,7 @@ extension TrackingMacro: MemberAttributeMacro {
       }
     }
 
-    if variableDecl.bindingSpecifier.tokenKind == .keyword(.let)
-      || variableDecl.bindingSpecifier.tokenKind == .keyword(.var)
-    {
+    if variableDecl.bindingSpecifier.tokenKind == .keyword(.var) {
       let macroAttribute = "@COWTrackingProperty"
       let attributeSyntax = AttributeSyntax.init(stringLiteral: macroAttribute)
 
