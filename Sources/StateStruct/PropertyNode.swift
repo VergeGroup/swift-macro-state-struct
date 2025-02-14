@@ -43,7 +43,7 @@ public struct PropertyNode: Equatable, CustomDebugStringConvertible {
 
   public var nodes: [PropertyNode] = []
   
-  private mutating func mark(status: Status) {
+  mutating func mark(status: Status) {
     switch status {
     case .read:
       readCount &+= 1

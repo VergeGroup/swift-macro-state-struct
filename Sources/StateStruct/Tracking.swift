@@ -11,7 +11,7 @@ extension Array {
 
 
 public final class _TrackingContext: Sendable, Equatable {
-  
+    
   public static func == (lhs: _TrackingContext, rhs: _TrackingContext) -> Bool {
     // ``_TrackingContext`` is used only for embedding into the struct.
     // It always returns true when checked for equality to prevent
@@ -33,7 +33,7 @@ public final class _TrackingContext: Sendable, Equatable {
     }
   }
   
-  public var identifier: AnyHashable? {
+  var identifier: Identifier? {
     get {
       infoBox.withLockUnchecked {
         $0[Unmanaged.passUnretained(Thread.current).toOpaque()]?.identifier
@@ -52,7 +52,7 @@ public final class _TrackingContext: Sendable, Equatable {
     var path: PropertyPath?
     
     @usableFromInline
-    var identifier: AnyHashable?
+    var identifier: Identifier?
     
     @inlinable
     init() {
@@ -66,6 +66,29 @@ public final class _TrackingContext: Sendable, Equatable {
 
   public init() {
   }
+}
+
+extension _TrackingContext {
+  
+  @usableFromInline
+  final class Identifier: Hashable {
+    
+    @usableFromInline
+    static func == (lhs: Identifier, rhs: Identifier) -> Bool {
+      lhs === rhs
+    }
+    
+    @usableFromInline
+    func hash(into hasher: inout Hasher) {
+      ObjectIdentifier(self).hash(into: &hasher)
+    }
+    
+    init() {
+      
+    }
+    
+  }
+
 }
 
 public struct PropertyPath: Equatable {
@@ -100,20 +123,36 @@ public struct PropertyPath: Equatable {
 
 extension TrackingObject {
 
+  /**
+   Nesting supproted
+   */
   public func tracking(
     using graph: consuming PropertyNode? = nil,
     _ applier: () throws -> Void
   ) rethrows -> TrackingResult {
+    
     let current = Thread.current.threadDictionary.tracking
     startTracking()
+    
     defer {
       Thread.current.threadDictionary.tracking = current
       endTracking()
     }
     
+    let identifier = _TrackingContext.Identifier()
+    self._tracking_context.identifier = identifier
+    
     Thread.current.threadDictionary.tracking = TrackingResult(graph: graph ?? .init(name: _typeName(type(of: self))))
+    
     try applier()
-    let result = Thread.current.threadDictionary.tracking!
+    
+    var result = Thread.current.threadDictionary.tracking!
+    
+    if Optional(identifier) != self._tracking_context.identifier {
+      // root has been modified
+      result.graph.mark(status: .write)
+    }
+        
     return result    
   }
 
@@ -123,7 +162,7 @@ extension TrackingObject {
 
   private func endTracking() {
   }
-
+  
 }
 
 public struct TrackingResult: Equatable {

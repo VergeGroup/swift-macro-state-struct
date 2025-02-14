@@ -413,4 +413,20 @@ struct TrackingTests {
         """
     )
   }
+  
+  @Test
+  func modify_root() {
+    
+    var original = MyState.init()
+        
+    let result = original.tracking {
+      original = .init()
+    }
+    
+    #expect(
+      result.graph.prettyPrint() == """
+        StateStructTests.MyState
+        """
+    )
+  }
 }
