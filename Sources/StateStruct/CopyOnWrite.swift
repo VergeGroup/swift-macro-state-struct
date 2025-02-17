@@ -1,4 +1,7 @@
 
+/**
+ non-atomic
+ */
 public final class _BackingStorage<Value>: @unchecked Sendable {
   
   public var value: Value
@@ -15,6 +18,11 @@ extension _BackingStorage: Equatable where Value: Equatable {
   }  
 }
 
+extension _BackingStorage: Hashable where Value: Hashable {
+  public func hash(into hasher: inout Hasher) {
+    value.hash(into: &hasher)
+  }
+}
 
 #if DEBUG
 private struct Before {
