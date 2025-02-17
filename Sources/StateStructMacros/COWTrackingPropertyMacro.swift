@@ -1,8 +1,8 @@
 import SwiftCompilerPlugin
 import SwiftSyntax
 import SwiftSyntaxBuilder
-import SwiftSyntaxMacros
 import SwiftSyntaxMacroExpansion
+import SwiftSyntaxMacros
 
 public struct COWTrackingPropertyMacro {
 
@@ -44,15 +44,34 @@ extension COWTrackingPropertyMacro: PeerMacro {
     var _variableDecl = variableDecl.trimmed
     _variableDecl.attributes = [.init(.init(stringLiteral: "@TrackingIgnored"))]
 
-    _variableDecl = _variableDecl
-      .renamingIdentifier(with: "_backing_")
-      .modifyingTypeAnnotation({ type in
-        return "_BackingStorage<\(type.trimmed)>"
-      })
-      .modifyingInit({ initializer in                
-        return .init(value: "_BackingStorage.init(\(initializer.value))" as ExprSyntax)        
-      })
-    
+    if variableDecl.isOptional {
+      _variableDecl =
+        _variableDecl
+        .renamingIdentifier(with: "_backing_")
+        .modifyingTypeAnnotation({ type in
+          return "_BackingStorage<\(type.trimmed)>"
+        })
+
+      _variableDecl = _variableDecl.with(
+        \.bindings,
+        .init(
+          _variableDecl.bindings.map { binding in
+            binding.with(\.initializer, .init(value: "_BackingStorage.init(nil)" as ExprSyntax))
+          })
+      )
+
+    } else {
+      _variableDecl =
+        _variableDecl
+        .renamingIdentifier(with: "_backing_")
+        .modifyingTypeAnnotation({ type in
+          return "_BackingStorage<\(type.trimmed)>"
+        })
+        .modifyingInit({ initializer in
+          return .init(value: "_BackingStorage.init(\(initializer.value))" as ExprSyntax)
+        })
+    }
+
     newMembers.append(DeclSyntax(_variableDecl))
 
     return newMembers
@@ -88,7 +107,7 @@ extension COWTrackingPropertyMacro: AccessorMacro {
       }
       """
     )
-    
+
     let readAccessor = AccessorDeclSyntax(
       """
       _read {
@@ -113,7 +132,7 @@ extension COWTrackingPropertyMacro: AccessorMacro {
         } else {
           \(raw: backingName).value = newValue
         }
-      
+
       }
       """
     )
@@ -132,16 +151,18 @@ extension COWTrackingPropertyMacro: AccessorMacro {
       }
       """
     )
-    
+
     var accessors: [AccessorDeclSyntax] = []
-       
-    accessors.append(readAccessor)
-    if !isConstant {
-      accessors.append(setAccessor)      
-      accessors.append(modifyAccessor)
-    }
+
     if binding.initializer == nil {
       accessors.append(initAccessor)
+    }
+
+    accessors.append(readAccessor)
+
+    if !isConstant {
+      accessors.append(setAccessor)
+      accessors.append(modifyAccessor)
     }
 
     return accessors
@@ -153,28 +174,28 @@ extension COWTrackingPropertyMacro: AccessorMacro {
 extension VariableDeclSyntax {
   func renamingIdentifier(with newName: String) -> VariableDeclSyntax {
     let newBindings = self.bindings.map { binding -> PatternBindingSyntax in
-      
+
       if let identifierPattern = binding.pattern.as(IdentifierPatternSyntax.self) {
-        
+
         let propertyName = identifierPattern.identifier.text
-        
+
         let newIdentifierPattern = identifierPattern.with(
           \.identifier, "\(raw: newName)\(raw: propertyName)")
         return binding.with(\.pattern, .init(newIdentifierPattern))
       }
       return binding
     }
-    
+
     return self.with(\.bindings, .init(newBindings))
   }
 }
 
 extension VariableDeclSyntax {
   func withPrivateModifier() -> VariableDeclSyntax {
-    
+
     let privateModifier = DeclModifierSyntax.init(
       name: .keyword(.private), trailingTrivia: .spaces(1))
-    
+
     var modifiers = self.modifiers
     if modifiers.contains(where: { $0.name.tokenKind == .keyword(.private) }) {
       return self
@@ -185,7 +206,15 @@ extension VariableDeclSyntax {
 }
 
 extension VariableDeclSyntax {
-  
+
+  var isOptional: Bool {
+
+    return self.bindings.contains(where: {
+      $0.typeAnnotation?.type.is(OptionalTypeSyntax.self) ?? false
+    })
+
+  }
+
   func modifyingTypeAnnotation(_ modifier: (TypeSyntax) -> TypeSyntax) -> VariableDeclSyntax {
     let newBindings = self.bindings.map { binding -> PatternBindingSyntax in
       if let typeAnnotation = binding.typeAnnotation {
@@ -195,21 +224,23 @@ extension VariableDeclSyntax {
       }
       return binding
     }
-    
+
     return self.with(\.bindings, .init(newBindings))
   }
-  
-  func modifyingInit(_ modifier: (InitializerClauseSyntax) -> InitializerClauseSyntax) -> VariableDeclSyntax {
-    
-    let newBindings = self.bindings.map { binding -> PatternBindingSyntax in      
+
+  func modifyingInit(_ modifier: (InitializerClauseSyntax) -> InitializerClauseSyntax)
+    -> VariableDeclSyntax
+  {
+
+    let newBindings = self.bindings.map { binding -> PatternBindingSyntax in
       if let initializer = binding.initializer {
         let newInitializer = modifier(initializer)
         return binding.with(\.initializer, newInitializer)
       }
       return binding
     }
-    
+
     return self.with(\.bindings, .init(newBindings))
   }
-  
+
 }
