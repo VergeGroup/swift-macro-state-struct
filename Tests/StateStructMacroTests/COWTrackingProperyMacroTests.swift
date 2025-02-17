@@ -17,19 +17,113 @@ final class COWTrackingProperyMacroTests: XCTestCase {
       super.invokeTest()
     }
   }
-    
+
+  func test_optional_init() {
+    assertMacro {
+      """
+      struct OptinalPropertyState {
+        
+        @COWTrackingProperty
+        var stored_1: Int?
+        
+        init() {        
+        }
+        
+      }
+      """
+    } expansion: {
+      """
+      struct OptinalPropertyState {
+
+        var stored_1: Int? {
+          
+        @storageRestrictions(initializes: _backing_stored_1)
+          
+        init(initialValue) {
+          
+          _backing_stored_1 = .init(initialValue)
+          
+        }
+          
+        _read {
+          
+          (_backing_stored_1.value as? TrackingObject)?._tracking_context.path = _tracking_context.path?.pushed(.init("stored_1"))
+          
+          _Tracking._tracking_modifyStorage {
+          
+            $0.accessorRead(path: _tracking_context.path?.pushed(.init("stored_1")))
+          
+          }
+          
+          yield _backing_stored_1.value
+          
+        }
+          
+        set {
+          
+          (_backing_stored_1.value as? TrackingObject)?._tracking_context.path = _tracking_context.path?.pushed(.init("stored_1"))
+          
+          _Tracking._tracking_modifyStorage {
+          
+            $0.accessorSet(path: _tracking_context.path?.pushed(.init("stored_1")))
+          
+          }
+          
+          if !isKnownUniquelyReferenced(&_backing_stored_1) {
+          
+            _backing_stored_1 = .init(newValue)
+          
+          } else {
+          
+            _backing_stored_1.value = newValue
+          
+          }
+
+          
+        }
+          
+        _modify {
+          
+          (_backing_stored_1.value as? TrackingObject)?._tracking_context.path = _tracking_context.path?.pushed(.init("stored_1"))
+          
+          _Tracking._tracking_modifyStorage {
+          
+            $0.accessorModify(path: _tracking_context.path?.pushed(.init("stored_1")))
+          
+          }
+          
+          if !isKnownUniquelyReferenced(&_backing_stored_1) {
+          
+            _backing_stored_1 = .init(_backing_stored_1.value)
+          
+          }
+          
+          yield &_backing_stored_1.value
+          
+        }
+        }
+          var _backing_stored_1: _BackingStorage<Int?> = _BackingStorage.init(nil)
+        
+        init() {        
+        }
+        
+      }
+      """
+    }
+  }
+
   func test_macro() {
 
     assertMacro {
       """
       struct MyState {
-      
+
         @COWTrackingProperty  
         private var stored_0: Int = 18
-      
+
         @COWTrackingProperty  
         public var stored_1: Int = 18
-      
+
         func compute() {
         }
       }

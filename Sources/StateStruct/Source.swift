@@ -30,6 +30,18 @@ public macro COWTrackingProperty() =
 #if DEBUG
 
   @Tracking
+  struct OptinalPropertyState {
+
+    var name: String
+    var stored_1: Int?
+
+    init() {
+      self.name = ""
+    }
+
+  }
+
+  @Tracking
   struct LetState {
 
     let stored_1: Int
@@ -89,6 +101,8 @@ public macro COWTrackingProperty() =
       let stored: Int
 
       var stored_2: Int
+
+      var stored_3: Int?
 
       var name = ""
 
