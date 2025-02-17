@@ -57,6 +57,11 @@ public macro COWTrackingProperty() =
     var count: Int = 0
   }
 
+@Tracking
+struct HashableState: Hashable {
+  var count: Int = 0
+}
+
   @Tracking
   struct MyState {
 
