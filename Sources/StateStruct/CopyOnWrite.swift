@@ -10,6 +10,13 @@ public final class _BackingStorage<Value>: @unchecked Sendable {
     self.value = value
   }
     
+  public func copy(with newValue: consuming Value) -> _BackingStorage {
+    .init(newValue)
+  }
+  
+  public func copy() -> _BackingStorage {
+    return .init(value)
+  }
 }
 
 extension _BackingStorage: Equatable where Value: Equatable {
