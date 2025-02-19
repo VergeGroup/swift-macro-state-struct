@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "1194A67B-74F2-4259-BCF4-4C67B5C7FAE7",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "StateStructMacroTests",
+        "name" : "StateStructMacroTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "StateStructTests",
+        "name" : "StateStructTests"
+      }
+    }
+  ],
+  "version" : 1
+}
