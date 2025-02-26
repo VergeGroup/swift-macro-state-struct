@@ -1,9 +1,7 @@
 
 import os.lock
 
-/**
- non-atomic
- */
+@dynamicMemberLookup
 public final class _BackingStorage<Value>: Sendable {
     
   public var value: Value {
@@ -20,6 +18,24 @@ public final class _BackingStorage<Value>: Sendable {
   }
   
   private let _value: ManagedCriticalState<Value>
+  
+  public subscript <U>(dynamicMember keyPath: KeyPath<Value, U>) -> U {
+    _read { yield value[keyPath: keyPath] }
+  }
+  
+  public subscript <U>(dynamicMember keyPath: KeyPath<Value, U?>) -> U? {
+    _read { yield value[keyPath: keyPath] }
+  }
+  
+  public subscript <U>(dynamicMember keyPath: WritableKeyPath<Value, U>) -> U {
+    _read { yield value[keyPath: keyPath] }
+    _modify { yield &value[keyPath: keyPath] }
+  }
+  
+  public subscript <U>(dynamicMember keyPath: WritableKeyPath<Value, U?>) -> U? {
+    _read { yield value[keyPath: keyPath] }
+    _modify { yield &value[keyPath: keyPath] }
+  }
   
   public init(_ value: consuming Value) {
     self._value = .init(value)
