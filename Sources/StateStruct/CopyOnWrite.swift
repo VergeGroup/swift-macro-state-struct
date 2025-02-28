@@ -3,7 +3,7 @@ import os.lock
 
 @dynamicMemberLookup
 public final class _BackingStorage<Value>: Sendable {
-    
+  
   public var value: Value {
     get {
       _value.withCriticalRegion {

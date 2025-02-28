@@ -134,6 +134,8 @@ public struct TrackingResult: Equatable {
 
   public var graph: PropertyNode
   
+  public var currentPath: PropertyPath?
+  
   public init(graph: consuming PropertyNode) {
     self.graph = graph
   }
@@ -171,8 +173,10 @@ extension NSMutableDictionary {
     get {
       self[ThreadDictionaryKey.tracking] as? TrackingResult
     }
-    set {
-      self[ThreadDictionaryKey.tracking] = newValue
+    _modify {
+      var current = self[ThreadDictionaryKey.tracking] as? TrackingResult
+      yield &current
+      self[ThreadDictionaryKey.tracking] = current
     }
   }
 }
