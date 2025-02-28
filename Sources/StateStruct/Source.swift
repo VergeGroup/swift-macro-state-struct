@@ -72,6 +72,12 @@ struct HashableState: Hashable {
     var stored_1: Int = 18
 
     var stored_2: Int
+    
+    var stored_3: Int = 10 {
+      didSet {
+        print("stored_3 did set")
+      }
+    }
 
     var computed_1: Int {
       stored_1
