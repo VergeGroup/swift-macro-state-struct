@@ -131,6 +131,10 @@ extension COWTrackingPropertyMacro: AccessorMacro {
           \(raw: backingName) = .init(newValue)
         } else {
           \(raw: backingName).value = newValue
+      
+          // trigger didSet
+          let current = \(raw: backingName)
+          \(raw: backingName) = current
         }
 
       }
@@ -148,6 +152,10 @@ extension COWTrackingPropertyMacro: AccessorMacro {
           \(raw: backingName) = .init(\(raw: backingName).value)
         }
         yield &\(raw: backingName).value
+
+        // trigger didSet
+        let current = \(raw: backingName)
+        \(raw: backingName) = current
       }
       """
     )

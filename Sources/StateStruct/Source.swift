@@ -114,6 +114,12 @@ struct HashableState: Hashable {
       var stored_2: Int
 
       var stored_3: Int?
+      
+      var stored_4: Int = 10 {
+        didSet {
+          print("stored_4 did set")
+        }
+      }
 
       var name = ""
 

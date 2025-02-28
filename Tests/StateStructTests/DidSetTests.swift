@@ -4,27 +4,59 @@ import StateStruct
 @Suite("DidSet")
 struct DidSetTests {
   
-  @Tracking
-  struct State {
+  struct NormalState {
     
     var count: Int = 0 {
+      willSet { 
+        willSet_count = newValue
+      }
       didSet {
-        copy_count = count
+        didSet_count = count
       }
     }
     
-    var copy_count: Int = 0       
+    var didSet_count: Int = 0       
+    var willSet_count: Int = 0
+    
+  }
+  
+  @Tracking
+  struct TrackingState {
+    
+    var count: Int = 0 {
+      willSet { 
+//        willSet_count = newValue
+      }
+      didSet {
+        didSet_count = count
+      }
+    }
+    
+    var didSet_count: Int = 0       
+    var willSet_count: Int = 0
     
   }
   
   @Test
-  func example() {
+  func normal() {
     
-    var value = State()
+    var value = NormalState()
     
     value.count = 1
     
-    #expect(value.copy_count == 1)
+    #expect(value.didSet_count == 1)
+    #expect(value.willSet_count == 1)
+  }
+  
+  @Test
+  func tracking() {
+    
+    var value = TrackingState()
+    
+    value.count = 1
+    
+    #expect(value.didSet_count == 1)
+    #expect(value.willSet_count == 1)
   
   }
 }
