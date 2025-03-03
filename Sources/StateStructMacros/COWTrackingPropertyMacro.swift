@@ -52,6 +52,7 @@ extension COWTrackingPropertyMacro: PeerMacro {
           return "_BackingStorage<\(type.trimmed)>"
         })
 
+      // add init
       _variableDecl = _variableDecl.with(
         \.bindings,
         .init(
@@ -68,8 +69,22 @@ extension COWTrackingPropertyMacro: PeerMacro {
           return "_BackingStorage<\(type.trimmed)>"
         })
         .modifyingInit({ initializer in
-          return .init(value: "_BackingStorage.init(\(initializer.value))" as ExprSyntax)
+          return .init(value: "_BackingStorage.init(\(initializer.trimmed.value))" as ExprSyntax)
         })
+    }
+    
+    do {
+      
+      // remove accessors
+      _variableDecl = _variableDecl.with(
+        \.bindings,
+         .init(
+          _variableDecl.bindings.map { binding in
+            binding.with(\.accessorBlock, nil)
+          }
+         )           
+      )
+                                  
     }
 
     newMembers.append(DeclSyntax(_variableDecl))
@@ -94,10 +109,11 @@ extension COWTrackingPropertyMacro: AccessorMacro {
     else {
       return []
     }
-
+    
     let isConstant = variableDecl.bindingSpecifier.tokenKind == .keyword(.let)
     let propertyName = identifierPattern.identifier.text
     let backingName = "_backing_" + propertyName
+    let hasWillSet = variableDecl.willSetBlock != nil
 
     let initAccessor = AccessorDeclSyntax(
       """
@@ -122,7 +138,11 @@ extension COWTrackingPropertyMacro: AccessorMacro {
 
     let setAccessor = AccessorDeclSyntax(
       """
-      set {      
+      set { 
+        
+        // willset
+        \(variableDecl.makeWillSetDoBlock())
+      
         (\(raw: backingName).value as? TrackingObject)?._tracking_context.path = _tracking_context.path?.pushed(.init("\(raw: propertyName)"))
         _Tracking._tracking_modifyStorage {
           $0.accessorSet(path: _tracking_context.path?.pushed(.init("\(raw: propertyName)")))
@@ -130,13 +150,11 @@ extension COWTrackingPropertyMacro: AccessorMacro {
         if !isKnownUniquelyReferenced(&\(raw: backingName)) {
           \(raw: backingName) = .init(newValue)
         } else {
-          \(raw: backingName).value = newValue
-      
-          // trigger didSet
-          let current = \(raw: backingName)
-          \(raw: backingName) = current
+          \(raw: backingName).value = newValue             
         }
 
+        // didSet 
+        \(variableDecl.makeDidSetDoBlock())
       }
       """
     )
@@ -153,9 +171,8 @@ extension COWTrackingPropertyMacro: AccessorMacro {
         }
         yield &\(raw: backingName).value
 
-        // trigger didSet
-        let current = \(raw: backingName)
-        \(raw: backingName) = current
+        // didSet   
+        \(variableDecl.makeDidSetDoBlock())
       }
       """
     )
@@ -170,7 +187,10 @@ extension COWTrackingPropertyMacro: AccessorMacro {
 
     if !isConstant {
       accessors.append(setAccessor)
-      accessors.append(modifyAccessor)
+      
+      if hasWillSet == false {
+        accessors.append(modifyAccessor)
+      }
     }
 
     return accessors
@@ -251,4 +271,59 @@ extension VariableDeclSyntax {
     return self.with(\.bindings, .init(newBindings))
   }
 
+}
+
+extension VariableDeclSyntax {
+  
+  func makeDidSetDoBlock() -> DoStmtSyntax {
+    guard let didSetBlock = self.didSetBlock else {
+      return .init(body: "{}")
+    }
+    
+    return .init(body: didSetBlock)    
+  }
+  
+  func makeWillSetDoBlock() -> DoStmtSyntax {
+    guard let willSetBlock = self.willSetBlock else {
+      return .init(body: "{}")
+    }
+    
+    return .init(body: willSetBlock)    
+  }
+  
+  var didSetBlock: CodeBlockSyntax? {
+    for binding in self.bindings {
+      if let accessorBlock = binding.accessorBlock {
+        switch accessorBlock.accessors {
+        case .accessors(let accessors):
+          for accessor in accessors {
+            if accessor.accessorSpecifier.tokenKind == .keyword(.didSet) {
+              return accessor.body
+            }
+          }
+        case .getter:
+          return nil
+        }       
+      }
+    }
+    return nil
+  }
+  
+  var willSetBlock: CodeBlockSyntax? {
+    for binding in self.bindings {
+      if let accessorBlock = binding.accessorBlock {
+        switch accessorBlock.accessors {
+        case .accessors(let accessors):
+          for accessor in accessors {
+            if accessor.accessorSpecifier.tokenKind == .keyword(.willSet) {
+              return accessor.body
+            }
+          }
+        case .getter:
+          return nil
+        }       
+      }
+    }
+    return nil
+  }
 }

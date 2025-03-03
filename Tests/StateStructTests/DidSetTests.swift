@@ -25,7 +25,7 @@ struct DidSetTests {
     
     var count: Int = 0 {
       willSet { 
-//        willSet_count = newValue
+        willSet_count = newValue
       }
       didSet {
         didSet_count = count
