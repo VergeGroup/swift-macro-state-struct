@@ -5,7 +5,11 @@ import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
 public struct COWTrackingPropertyMacro {
-
+  
+  public enum Error: Swift.Error {
+    case needsTypeAnnotation
+  }
+  
 }
 
 extension COWTrackingPropertyMacro: PeerMacro {
@@ -16,6 +20,11 @@ extension COWTrackingPropertyMacro: PeerMacro {
   ) throws -> [DeclSyntax] {
 
     guard let variableDecl = declaration.as(VariableDeclSyntax.self) else {
+      return []
+    }
+    
+    guard variableDecl.typeSyntax != nil else {
+      context.addDiagnostics(from: Error.needsTypeAnnotation, node: declaration)
       return []
     }
 
