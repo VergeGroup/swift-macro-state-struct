@@ -70,8 +70,22 @@ extension TrackingMacro: MemberAttributeMacro {
 
     // to ignore computed properties
     for binding in variableDecl.bindings {
-      if binding.accessorBlock != nil {
-        return []
+      if let accessorBlock = binding.accessorBlock {
+        // Check if this is a computed property (has a 'get' accessor)
+        // If it has only property observers like didSet/willSet, it's still a stored property
+        
+        switch accessorBlock.accessors {
+        case .accessors(let accessors):
+          let hasGetter = accessors.contains { syntax in
+            syntax.accessorSpecifier.tokenKind == .keyword(.get)
+          }
+          if hasGetter {
+            return []
+          }
+          continue
+        case .getter:
+          return []
+        }        
       }
     }
 

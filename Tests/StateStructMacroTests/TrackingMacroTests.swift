@@ -15,6 +15,93 @@ final class TrackingMacroTests: XCTestCase {
     }
   }
   
+  func test_ignore_computed() {
+    
+    assertMacro {
+      """
+      @Tracking
+      struct MyState {
+      
+        var c_0: Int {
+          0
+        }
+      
+        var c_1: Int {
+          get { 0 }
+        }
+      
+        var c_2: Int {
+          get { 0 }
+          set { }
+        }
+          
+      }
+      """
+    } expansion: {
+      """
+      struct MyState {
+
+        var c_0: Int {
+          0
+        }
+
+        var c_1: Int {
+          get { 0 }
+        }
+
+        var c_2: Int {
+          get { 0 }
+          set { }
+        }
+
+        internal let _tracking_context: _TrackingContext = .init()
+          
+      }
+
+      extension MyState: TrackingObject {
+      }
+      """
+    }
+    
+  }
+  
+  func test_stored_observer() {
+    
+    assertMacro {
+      """
+      @Tracking
+      struct MyState {
+      
+        var stored_0: Int = 18 {
+          didSet {
+            print("stored_0 did set")
+          }
+        }
+          
+      }
+      """
+    } expansion: {
+      """
+      struct MyState {
+        @COWTrackingProperty
+
+        var stored_0: Int = 18 {
+          didSet {
+            print("stored_0 did set")
+          }
+        }
+
+        internal let _tracking_context: _TrackingContext = .init()
+          
+      }
+
+      extension MyState: TrackingObject {
+      }
+      """
+    }
+    
+  }
+  
   func test_public() {
     assertMacro {
       """
