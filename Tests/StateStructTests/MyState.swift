@@ -557,8 +557,8 @@ struct MyState {
       self.name = name
     }
 
-    var name = ""
-    var age = 10
+    var name: String = ""
+    var age: Int = 10
   }
 
   struct NestedAttached {

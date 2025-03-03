@@ -109,6 +109,10 @@ final class COWTrackingProperyMacroTests: XCTestCase {
         }
           var _backing_stored_0: _BackingStorage<Int> = _BackingStorage.init(18)
 
+        public var $stored_0: Referencing<Int> {
+          Referencing(storage: _backing_stored_0)
+        }
+
 
         var stored_1: Int {
           willSet {
@@ -150,6 +154,10 @@ final class COWTrackingProperyMacroTests: XCTestCase {
         }
           var _backing_stored_1: _BackingStorage<Int> = _BackingStorage.init(18)
 
+        public var $stored_1: Referencing<Int> {
+          Referencing(storage: _backing_stored_1)
+        }
+
 
         var stored_2: Int {
           willSet {
@@ -186,6 +194,10 @@ final class COWTrackingProperyMacroTests: XCTestCase {
           }
         }
           var _backing_stored_2: _BackingStorage<Int> = _BackingStorage.init(18)
+
+        public var $stored_2: Referencing<Int> {
+          Referencing(storage: _backing_stored_2)
+        }
 
         internal let _tracking_context: _TrackingContext = .init()
           
@@ -301,6 +313,10 @@ final class COWTrackingProperyMacroTests: XCTestCase {
         }
         }
           var _backing_stored_1: _BackingStorage<Int?> = _BackingStorage.init(nil)
+
+        public var $stored_1: Referencing<Int?> {
+          Referencing(storage: _backing_stored_1)
+        }
         
         init() {        
         }
@@ -376,6 +392,10 @@ final class COWTrackingProperyMacroTests: XCTestCase {
         }
           private var _backing_stored_0: _BackingStorage<Int> = _BackingStorage.init(18)
 
+        public var $stored_0: Referencing<Int> {
+          Referencing(storage: _backing_stored_0)
+        }
+
 
         public var stored_1: Int {
           _read {
@@ -421,6 +441,10 @@ final class COWTrackingProperyMacroTests: XCTestCase {
           }
         }
           public var _backing_stored_1: _BackingStorage<Int> = _BackingStorage.init(18)
+
+        public var $stored_1: Referencing<Int> {
+          Referencing(storage: _backing_stored_1)
+        }
 
         func compute() {
         }

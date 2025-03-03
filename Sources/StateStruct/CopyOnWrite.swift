@@ -2,22 +2,9 @@
 import os.lock
 
 @dynamicMemberLookup
-public final class _BackingStorage<Value>: Sendable {
+public final class _BackingStorage<Value>: @unchecked Sendable {
     
-  public var value: Value {
-    get {
-      _value.withCriticalRegion {
-        $0
-      }
-    }
-    set {
-      _value.withCriticalRegion {
-        $0 = newValue
-      }
-    }
-  }
-  
-  private let _value: ManagedCriticalState<Value>
+  public var value: Value
   
   public subscript <U>(dynamicMember keyPath: KeyPath<Value, U>) -> U {
     _read { yield value[keyPath: keyPath] }
@@ -38,7 +25,7 @@ public final class _BackingStorage<Value>: Sendable {
   }
   
   public init(_ value: consuming Value) {
-    self._value = .init(value)
+    self.value = value
   }
     
   public func copy(with newValue: consuming Value) -> _BackingStorage {
@@ -47,41 +34,6 @@ public final class _BackingStorage<Value>: Sendable {
   
   public func copy() -> _BackingStorage {
     return .init(value)
-  }
-}
-
-private struct ManagedCriticalState<State>: ~Copyable, @unchecked Sendable {
-  
-  typealias Lock = os_unfair_lock
-  
-  private final class LockedBuffer: ManagedBuffer<State, Lock> {
-    deinit {
-      withUnsafeMutablePointerToElements { 
-        $0.deinitialize(count: 1)
-        return
-      }
-    }
-  }
-  
-  private let buffer: ManagedBuffer<State, Lock>
-  
-  init(_ initial: State) {
-    buffer = LockedBuffer.create(minimumCapacity: 1) { buffer in
-      buffer.withUnsafeMutablePointerToElements {
-        $0.initialize(to: Lock())
-      }
-      return initial
-    }
-  }
-  
-  func withCriticalRegion<R>(_ critical: (inout State) throws -> R) rethrows -> R {
-    try buffer.withUnsafeMutablePointers { header, lock in
-      os_unfair_lock_lock(lock)
-      defer { 
-        os_unfair_lock_unlock(lock)
-      }
-      return try critical(&header.pointee)
-    }
   }
 }
 
