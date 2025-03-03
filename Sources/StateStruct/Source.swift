@@ -23,7 +23,7 @@ public macro TrackingIgnored() =
   accessor,
   names: named(init), named(_read), named(set), named(_modify)
 )
-@attached(peer, names: prefixed(`_backing_`))
+@attached(peer, names: prefixed(`_backing_`),  prefixed(`$`))
 public macro COWTrackingProperty() =
   #externalMacro(module: "StateStructMacros", type: "COWTrackingPropertyMacro")
 

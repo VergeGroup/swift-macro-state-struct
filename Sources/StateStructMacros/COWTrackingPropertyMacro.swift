@@ -88,6 +88,16 @@ extension COWTrackingPropertyMacro: PeerMacro {
     }
 
     newMembers.append(DeclSyntax(_variableDecl))
+    
+    do {
+      let referencingAccessor = """
+      public var $\(raw: variableDecl.name): Referencing<\(variableDecl.typeSyntax!.trimmed)> {
+        Referencing(storage: _backing_\(raw: variableDecl.name))
+      }
+      """ as DeclSyntax
+      
+      newMembers.append(referencingAccessor)
+    }
 
     return newMembers
   }
@@ -200,6 +210,11 @@ extension COWTrackingPropertyMacro: AccessorMacro {
 }
 
 extension VariableDeclSyntax {
+  
+  var name: String {
+    return self.bindings.first?.pattern.as(IdentifierPatternSyntax.self)?.identifier.text ?? ""
+  }
+  
   func renamingIdentifier(with newName: String) -> VariableDeclSyntax {
     let newBindings = self.bindings.map { binding -> PatternBindingSyntax in
 
@@ -241,6 +256,10 @@ extension VariableDeclSyntax {
       $0.typeAnnotation?.type.is(OptionalTypeSyntax.self) ?? false
     })
 
+  }
+  
+  var typeSyntax: TypeSyntax? {
+    return self.bindings.first?.typeAnnotation?.type    
   }
 
   func modifyingTypeAnnotation(_ modifier: (TypeSyntax) -> TypeSyntax) -> VariableDeclSyntax {
