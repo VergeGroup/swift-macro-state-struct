@@ -83,15 +83,15 @@ struct TrackingTests {
     )
 
   }
-  
+
   @Test
   func read_over_function() {
     let original = MyState.init()
-    
+
     let result = original.tracking {
       _ = original.customDescription()
     }
-    
+
     #expect(
       result.graph.prettyPrint() == """
         StateStructTests.MyState {
@@ -322,41 +322,41 @@ struct TrackingTests {
 
   @Test
   func write_is_empty() {
-    
+
     let original = MyState.init()
-     
+
     var result = original.tracking {
       _ = original.nested.name
-            
+
       var nested = original.nested
-      nested.name = "AAA"      
+      nested.name = "AAA"
     }
-    
+
     result.graph.shakeAsWrite()
-    
+
     result.graph.prettyPrint()
-    
+
     #expect(
       result.graph.isEmpty == true
     )
-    
+
   }
-  
+
   @Test
   func modify_count() {
-    
+
     var original = MyState.init()
-    
+
     func update(_ value: inout MyState.Nested) {
       value.name = "AAA"
       value.name = "AAA"
       value.age = 100
     }
-    
+
     let result = original.tracking {
       update(&original.nested)
     }
-    
+
     #expect(
       result.graph.prettyPrint() == """
         StateStructTests.MyState {
@@ -368,23 +368,23 @@ struct TrackingTests {
         """
     )
   }
-  
+
   @Test
   func modify_count_1() {
-    
+
     var original = MyState.init()
-    
+
     func update(_ value: inout MyState.Nested) {
-      let r = value.tracking {        
+      let r = value.tracking {
         value = .init(name: "AAA")
       }
       print(r.graph.prettyPrint())
     }
-    
+
     let result = original.tracking {
       update(&original.nested)
     }
-    
+
     #expect(
       result.graph.prettyPrint() == """
         StateStructTests.MyState {
@@ -393,24 +393,60 @@ struct TrackingTests {
         """
     )
   }
-  
+
   @Test
   func modify_count_2() {
-    
+
     var original = MyState.init()
-    
+
     func update(_ value: inout MyState) {
 
     }
-    
+
     let result = original.tracking {
       update(&original)
     }
-    
+
     #expect(
       result.graph.prettyPrint() == """
         StateStructTests.MyState
         """
     )
   }
+
+  @Test
+  func referencing() {
+
+    let tree = Tree(another: .init(wrappedValue: .init()))
+
+    let result = tree.tracking {
+      _ = tree.another?.value
+    }
+
+    #expect(
+      result.graph.prettyPrint() == """
+        StateStructTests.Tree {
+          another-(1) {
+            wrappedValue-(1) {
+              value-(1)
+            }
+          }
+        }
+        """
+    )
+  }
+}
+
+@Tracking
+struct AnotherTree {
+
+  var value: Int = 0
+
+}
+
+@Tracking
+struct Tree {
+
+  var another: Referencing<AnotherTree>?
+
 }
