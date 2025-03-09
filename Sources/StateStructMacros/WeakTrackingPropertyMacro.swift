@@ -4,7 +4,7 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
-public struct TrackingPropertyMacro {
+public struct WeakTrackingPropertyMacro {
   
   public enum Error: Swift.Error {
     case needsTypeAnnotation
@@ -12,7 +12,7 @@ public struct TrackingPropertyMacro {
   
 }
 
-extension TrackingPropertyMacro: PeerMacro {
+extension WeakTrackingPropertyMacro: PeerMacro {
   public static func expansion(
     of node: AttributeSyntax,
     providingPeersOf declaration: some DeclSyntaxProtocol,
@@ -61,7 +61,7 @@ extension TrackingPropertyMacro: PeerMacro {
   }
 }
 
-extension TrackingPropertyMacro: AccessorMacro {
+extension WeakTrackingPropertyMacro: AccessorMacro {
   public static func expansion(
     of node: SwiftSyntax.AttributeSyntax,
     providingAccessorsOf declaration: some SwiftSyntax.DeclSyntaxProtocol,
@@ -87,15 +87,14 @@ extension TrackingPropertyMacro: AccessorMacro {
       """
       @storageRestrictions(initializes: \(raw: backingName))
       init(initialValue) {
-        \(raw: backingName) = .init(initialValue)
+        \(raw: backingName) = initialValue
       }
       """
     )
     
     let readAccessor = AccessorDeclSyntax(
       """
-      _read {
-        (\(raw: backingName).value as? TrackingObject)?._tracking_context.path = _tracking_context.path?.pushed(.init("\(raw: propertyName)"))
+      _read {      
         _Tracking._tracking_modifyStorage {
           $0.accessorRead(path: _tracking_context.path?.pushed(.init("\(raw: propertyName)")))
         }
@@ -106,15 +105,11 @@ extension TrackingPropertyMacro: AccessorMacro {
     
     let setAccessor = AccessorDeclSyntax(
       """
-      set { 
-      
-        (\(raw: backingName).value as? TrackingObject)?._tracking_context.path = _tracking_context.path?.pushed(.init("\(raw: propertyName)"))
+      set {       
         _Tracking._tracking_modifyStorage {
           $0.accessorSet(path: _tracking_context.path?.pushed(.init("\(raw: propertyName)")))
-        }
-      
-        \(raw: backingName) = newValue   
-      
+        }      
+        \(raw: backingName) = newValue         
       }
       """
     )
@@ -122,7 +117,6 @@ extension TrackingPropertyMacro: AccessorMacro {
     let modifyAccessor = AccessorDeclSyntax(
       """
       _modify {
-        (\(raw: backingName).value as? TrackingObject)?._tracking_context.path = _tracking_context.path?.pushed(.init("\(raw: propertyName)"))
         _Tracking._tracking_modifyStorage {
           $0.accessorModify(path: _tracking_context.path?.pushed(.init("\(raw: propertyName)")))
         }      

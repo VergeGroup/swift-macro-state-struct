@@ -88,15 +88,20 @@ extension TrackingMacro: MemberAttributeMacro {
         }        
       }
     }
-
-    if variableDecl.bindingSpecifier.tokenKind == .keyword(.var) {
-      let macroAttribute = "@COWTrackingProperty"
-      let attributeSyntax = AttributeSyntax.init(stringLiteral: macroAttribute)
-
-      return [attributeSyntax]
+    
+    guard variableDecl.bindingSpecifier.tokenKind == .keyword(.var) else {
+      return []
     }
-
-    return []
+    
+    let isWeak = variableDecl.modifiers.contains { modifier in
+      modifier.name.tokenKind == .keyword(.weak)
+    }
+    
+    if isWeak {
+      return [AttributeSyntax(stringLiteral: "@WeakTrackingProperty")]
+    } else {
+      return [AttributeSyntax(stringLiteral: "@COWTrackingProperty")]
+    }
   }
 
 }
