@@ -435,6 +435,24 @@ struct TrackingTests {
         """
     )
   }
+  
+  @Test
+  func weakRef() {
+    
+    let state = MyState.init()
+    
+    let result = state.tracking {
+      _ = state.weak_ref
+    }
+    
+    #expect(
+      result.graph.prettyPrint() == """
+        StateStructTests.MyState {
+          weak_ref-(1)
+        }
+        """
+    )
+  }
 }
 
 @Tracking

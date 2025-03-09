@@ -507,6 +507,10 @@ struct Nesting {
   }
 }
 
+class Ref {
+  
+}
+
 @Tracking
 struct MyState {
 
@@ -532,6 +536,8 @@ struct MyState {
   var computedName: String {
     "Mr. " + name
   }
+  
+  weak var weak_ref: Ref?
 
   var computedAge: Int {
     let age = age

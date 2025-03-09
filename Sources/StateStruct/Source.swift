@@ -23,9 +23,17 @@ public macro TrackingIgnored() =
   accessor,
   names: named(init), named(_read), named(set), named(_modify)
 )
-@attached(peer, names: prefixed(`_backing_`),  prefixed(`$`))
+@attached(peer, names: prefixed(`_backing_`), prefixed(`$`))
 public macro COWTrackingProperty() =
   #externalMacro(module: "StateStructMacros", type: "COWTrackingPropertyMacro")
+
+@attached(
+  accessor,
+  names: named(init), named(_read), named(set), named(_modify)
+)
+@attached(peer, names: prefixed(`_backing_`))
+public macro WeakTrackingProperty() =
+  #externalMacro(module: "StateStructMacros", type: "WeakTrackingPropertyMacro")
 
 #if DEBUG
 
@@ -57,10 +65,10 @@ public macro COWTrackingProperty() =
     var count: Int = 0
   }
 
-@Tracking
-struct HashableState: Hashable {
-  var count: Int = 0
-}
+  @Tracking
+  struct HashableState: Hashable {
+    var count: Int = 0
+  }
 
   @Tracking
   struct MyState {
@@ -72,7 +80,7 @@ struct HashableState: Hashable {
     var stored_1: Int = 18
 
     var stored_2: Int
-    
+
     var stored_3: Int = 10 {
       didSet {
         print("stored_3 did set")
@@ -95,10 +103,16 @@ struct HashableState: Hashable {
     var computed_1: Int {
       stored_1
     }
+    
+    weak var weak_stored: Ref?
 
     init() {
 
     }
+
+  }
+
+  class Ref {
 
   }
 
@@ -114,7 +128,9 @@ struct HashableState: Hashable {
       var stored_2: Int
 
       var stored_3: Int?
-      
+
+      weak var weak_stored: Hoge?
+
       var stored_4: Int = 10 {
         didSet {
           print("stored_4 did set")
