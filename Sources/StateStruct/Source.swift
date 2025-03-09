@@ -115,6 +115,8 @@ struct HashableState: Hashable {
 
       var stored_3: Int?
       
+      weak var weak_stored: Int?
+      
       var stored_4: Int = 10 {
         didSet {
           print("stored_4 did set")
