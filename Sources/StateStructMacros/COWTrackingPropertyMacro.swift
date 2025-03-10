@@ -22,12 +22,15 @@ extension COWTrackingPropertyMacro: PeerMacro {
     guard let variableDecl = declaration.as(VariableDeclSyntax.self) else {
       return []
     }
-    
+        
     guard variableDecl.typeSyntax != nil else {
       context.addDiagnostics(from: Error.needsTypeAnnotation, node: declaration)
       return []
     }
 
+    let isPublic = variableDecl.modifiers.contains(where: { $0.name.tokenKind == .keyword(.public) })
+    let isPrivate = variableDecl.modifiers.contains(where: { $0.name.tokenKind == .keyword(.private) })
+    
     var newMembers: [DeclSyntax] = []
 
     let ignoreMacroAttached = variableDecl.attributes.contains {
@@ -98,9 +101,18 @@ extension COWTrackingPropertyMacro: PeerMacro {
 
     newMembers.append(DeclSyntax(_variableDecl))
     
+    var accessor: String
+    if isPrivate {
+      accessor = "private"
+    } else if isPublic {
+      accessor = "public"
+    } else {
+      accessor = "internal"
+    }
+    
     do {
       let referencingAccessor = """
-      public var $\(raw: variableDecl.name): Referencing<\(variableDecl.typeSyntax!.trimmed)> {
+      \(raw: accessor) var $\(raw: variableDecl.name): Referencing<\(variableDecl.typeSyntax!.trimmed)> {
         Referencing(storage: _backing_\(raw: variableDecl.name))
       }
       """ as DeclSyntax
