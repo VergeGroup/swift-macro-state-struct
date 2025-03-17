@@ -109,7 +109,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
         }
           var _backing_stored_0: _BackingStorage<Int> = _BackingStorage.init(18)
 
-        public var $stored_0: Referencing<Int> {
+        internal var $stored_0: Referencing<Int> {
           Referencing(storage: _backing_stored_0)
         }
 
@@ -154,7 +154,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
         }
           var _backing_stored_1: _BackingStorage<Int> = _BackingStorage.init(18)
 
-        public var $stored_1: Referencing<Int> {
+        internal var $stored_1: Referencing<Int> {
           Referencing(storage: _backing_stored_1)
         }
 
@@ -195,7 +195,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
         }
           var _backing_stored_2: _BackingStorage<Int> = _BackingStorage.init(18)
 
-        public var $stored_2: Referencing<Int> {
+        internal var $stored_2: Referencing<Int> {
           Referencing(storage: _backing_stored_2)
         }
 
@@ -314,7 +314,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
         }
           var _backing_stored_1: _BackingStorage<Int?> = _BackingStorage.init(nil)
 
-        public var $stored_1: Referencing<Int?> {
+        internal var $stored_1: Referencing<Int?> {
           Referencing(storage: _backing_stored_1)
         }
         
@@ -392,7 +392,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
         }
           private var _backing_stored_0: _BackingStorage<Int> = _BackingStorage.init(18)
 
-        public var $stored_0: Referencing<Int> {
+        private var $stored_0: Referencing<Int> {
           Referencing(storage: _backing_stored_0)
         }
 
