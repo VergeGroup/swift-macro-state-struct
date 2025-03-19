@@ -1,15 +1,42 @@
+import os.lock
 
-public final class TrackingResultRef {
+public final class TrackingResultRef: Sendable {
   
-  public var result: TrackingResult
+  public let resultBox: OSAllocatedUnfairLock<TrackingResult>
   
+  public var result: TrackingResult {
+    resultBox.withLock {
+      $0
+    }
+  }
+    
   public init(result: TrackingResult) {
-    self.result = result
+    self.resultBox = .init(initialState: result)
   }
   
+  public func modify(_ closure: (inout TrackingResult) -> Void) {
+    resultBox.withLockUnchecked(closure)
+  }
+  public func accessorRead(path: PropertyPath?) {
+    resultBox.withLockUnchecked { result in
+      result.accessorRead(path: path)
+    }
+  }
+  
+  public func accessorSet(path: PropertyPath?) {
+    resultBox.withLockUnchecked { result in
+      result.accessorSet(path: path)
+    }
+  }
+  
+  public func accessorModify(path: PropertyPath?) {
+    resultBox.withLockUnchecked { result in
+      result.accessorModify(path: path)
+    }
+  }
 }
 
-public struct TrackingResult: Equatable {
+public struct TrackingResult: Equatable, Sendable {
   
   public var graph: PropertyNode
   

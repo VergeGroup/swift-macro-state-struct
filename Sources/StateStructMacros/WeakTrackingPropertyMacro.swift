@@ -95,9 +95,9 @@ extension WeakTrackingPropertyMacro: AccessorMacro {
     let readAccessor = AccessorDeclSyntax(
       """
       _read {      
-        _Tracking._tracking_modifyStorage {
-          $0.accessorRead(path: _tracking_context.path?.pushed(.init("\(raw: propertyName)")))
-        }
+        let component = PropertyPath.Component.init("\(raw: propertyName)")
+        _tracking_context.trackingResultRef?.accessorRead(path: _tracking_context.path?.pushed(component))
+
         yield \(raw: backingName)
       }
       """
@@ -106,9 +106,9 @@ extension WeakTrackingPropertyMacro: AccessorMacro {
     let setAccessor = AccessorDeclSyntax(
       """
       set {       
-        _Tracking._tracking_modifyStorage {
-          $0.accessorSet(path: _tracking_context.path?.pushed(.init("\(raw: propertyName)")))
-        }      
+        let component = PropertyPath.Component.init("\(raw: propertyName)")
+        _tracking_context.trackingResultRef?.accessorSet(path: _tracking_context.path?.pushed(component))
+      
         \(raw: backingName) = newValue         
       }
       """
@@ -117,9 +117,9 @@ extension WeakTrackingPropertyMacro: AccessorMacro {
     let modifyAccessor = AccessorDeclSyntax(
       """
       _modify {
-        _Tracking._tracking_modifyStorage {
-          $0.accessorModify(path: _tracking_context.path?.pushed(.init("\(raw: propertyName)")))
-        }      
+        let component = PropertyPath.Component.init("\(raw: propertyName)")
+        _tracking_context.trackingResultRef?.accessorModify(path: _tracking_context.path?.pushed(component))
+      
         yield &\(raw: backingName)
       }
       """

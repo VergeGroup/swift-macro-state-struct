@@ -27,7 +27,7 @@ extension TrackingMacro: MemberMacro {
     
     return [
       """
-      \(raw: isPublic ? "public" : "internal") let _tracking_context: _TrackingContext = .init()
+      \(raw: isPublic ? "public" : "internal") var _tracking_context: _TrackingContext = .init()
       """ as DeclSyntax
     ]
   }

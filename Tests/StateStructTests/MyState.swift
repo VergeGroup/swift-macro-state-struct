@@ -512,6 +512,40 @@ class Ref {
 }
 
 @Tracking
+struct SendableState: Sendable {
+  
+  @Tracking
+  struct Level1 {
+    
+    init(name: String) {
+      self.name = name
+    }
+    
+    var level2: Level2 = .init(name: "")
+    var name: String = ""
+    var age: Int = 10
+  }
+  
+  @Tracking
+  struct Level2 {
+    
+    init(name: String) {
+      self.name = name
+    }
+    
+    var name: String = ""
+    var age: Int = 10
+  }
+  
+  var level1: Level1 = .init(name: "A")
+  
+  init() {
+    
+  }
+      
+}
+
+@Tracking
 struct MyState {
 
   init() {

@@ -1,4 +1,4 @@
-public struct PropertyNode: Equatable, CustomDebugStringConvertible {
+public struct PropertyNode: Sendable, Equatable, CustomDebugStringConvertible {
 
   public struct Status: OptionSet, Sendable {
     public let rawValue: Int8
@@ -258,7 +258,7 @@ extension PropertyNode {
     
     modify(&nodes)
   }
-
+  
 }
 
 extension PropertyNode {

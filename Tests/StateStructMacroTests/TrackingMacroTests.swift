@@ -54,7 +54,7 @@ final class TrackingMacroTests: XCTestCase {
           set { }
         }
 
-        internal let _tracking_context: _TrackingContext = .init()
+        internal var _tracking_context: _TrackingContext = .init()
           
       }
 
@@ -91,7 +91,7 @@ final class TrackingMacroTests: XCTestCase {
           }
         }
 
-        internal let _tracking_context: _TrackingContext = .init()
+        internal var _tracking_context: _TrackingContext = .init()
           
       }
 
@@ -152,7 +152,7 @@ final class TrackingMacroTests: XCTestCase {
         func compute() {
         }
 
-        public let _tracking_context: _TrackingContext = .init()
+        public var _tracking_context: _TrackingContext = .init()
       }
 
       extension MyState: TrackingObject {
@@ -212,7 +212,7 @@ final class TrackingMacroTests: XCTestCase {
         func compute() {
         }
 
-        internal let _tracking_context: _TrackingContext = .init()
+        internal var _tracking_context: _TrackingContext = .init()
       }
 
       extension MyState: TrackingObject {
@@ -240,7 +240,7 @@ final class TrackingMacroTests: XCTestCase {
 
         weak var weak_stored: Ref?      
 
-        internal let _tracking_context: _TrackingContext = .init()
+        internal var _tracking_context: _TrackingContext = .init()
 
       }
 

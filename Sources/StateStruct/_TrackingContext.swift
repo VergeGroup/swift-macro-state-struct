@@ -13,17 +13,45 @@ public final class _TrackingContext: Sendable, Hashable {
   public func hash(into hasher: inout Hasher) {
     0.hash(into: &hasher)
   }
+      
+  public struct Info {
+    
+    public var path: PropertyPath?
+    
+    public var identifier: AnyHashable?
+    
+    public var currentResultRef: TrackingResultRef?
 
+    init(
+      path: PropertyPath? = nil,
+      identifier: AnyHashable? = nil,
+      currentResultRef: TrackingResultRef?
+    ) {
+      self.path = path
+      self.identifier = identifier
+      self.currentResultRef = currentResultRef
+    }
+      
+  }
+
+  public let infoBox: OSAllocatedUnfairLock<Info>
+  
+  public func isEqual(to otherRef: TrackingResultRef) -> Bool {
+    infoBox.withLock { info in
+      info.currentResultRef === otherRef
+    }
+  }
+  
   @inlinable
   public var path: PropertyPath? {
     get {
       infoBox.withLockUnchecked {
-        $0[Unmanaged.passUnretained(Thread.current).toOpaque()]?.path
+        $0.path
       }
     }
     set {
       infoBox.withLockUnchecked {
-        $0[Unmanaged.passUnretained(Thread.current).toOpaque(), default: .init()].path = newValue
+        $0.path = newValue
       }
     }
   }
@@ -31,34 +59,40 @@ public final class _TrackingContext: Sendable, Hashable {
   public var identifier: AnyHashable? {
     get {
       infoBox.withLockUnchecked {
-        $0[Unmanaged.passUnretained(Thread.current).toOpaque()]?.identifier
+        $0.identifier
       }
     }
     set {
       infoBox.withLockUnchecked {
-        $0[Unmanaged.passUnretained(Thread.current).toOpaque(), default: .init()].identifier = newValue
+        $0.identifier = newValue
       }
     }
   }
-      
-  @usableFromInline
-  struct Info {
-    @usableFromInline
-    var path: PropertyPath?
-    
-    @usableFromInline
-    var identifier: AnyHashable?
-    
-    @inlinable
-    init() {
+  
+  public var trackingResultRef: TrackingResultRef? {
+    get {
+      infoBox.withLock { $0.currentResultRef }
+    }
+    set {
+      infoBox.withLock {
+        $0.currentResultRef = newValue
+      }
     }
   }
-
-  @usableFromInline
-  let infoBox: OSAllocatedUnfairLock<[UnsafeMutableRawPointer: Info]> = .init(
-    uncheckedState: [:]
-  )
-
+    
+  public init(trackingResultRef: TrackingResultRef) {
+    infoBox = .init(
+      uncheckedState: .init(
+        currentResultRef: trackingResultRef
+      )
+    )
+  }
+  
   public init() {
+    infoBox = .init(
+      uncheckedState: .init(
+        currentResultRef: nil
+      )
+    )
   }
 }
