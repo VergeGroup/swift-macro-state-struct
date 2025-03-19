@@ -7,18 +7,7 @@ public protocol TrackingObject {
 }
 
 extension TrackingObject {
-  
-  public mutating func tracking(
-    using graph: consuming PropertyNode? = nil,
-    _ applier: () throws -> Void
-  ) rethrows -> TrackingResult {    
-    
-    startNewTracking(using: graph)
-      
-    return trackingResult!
-    
-  }
-  
+   
   public var trackingResult: TrackingResult? {
     _tracking_context.infoBox.withLock { $0.currentResultRef?.result }
   }
