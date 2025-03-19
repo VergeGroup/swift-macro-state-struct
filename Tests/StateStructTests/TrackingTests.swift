@@ -64,16 +64,24 @@ struct TrackingTests {
       }
       .value
       
+      let level2 = a.level1.level2
+      
+      await Task {
+        _ = level2.name
+      }
+      .value
+            
       let result = a.trackingResult!
       
       #expect(
         result.graph.prettyPrint() == 
       """
       StateStructTests.SendableState {
-        level1+(2) {
+        level1-(1)+(2) {
           name+(1)
-          level2+(1) {
+          level2-(1)+(1) {
             age+(1)
+            name-(1)
           }
         }
       }
