@@ -22,9 +22,9 @@ extension TrackingMacro: MemberMacro {
     providingMembersOf declaration: some DeclGroupSyntax,
     in context: some MacroExpansionContext
   ) throws -> [DeclSyntax] {
-    
+
     let isPublic = declaration.modifiers.contains(where: { $0.name.tokenKind == .keyword(.public) })
-    
+
     return [
       """
       \(raw: isPublic ? "public" : "internal") var _tracking_context: _TrackingContext = .init()
@@ -45,12 +45,12 @@ extension TrackingMacro: ExtensionMacro {
     guard let structDecl = declaration.as(StructDeclSyntax.self) else {
       fatalError()
     }
-    
+
     return [
       ("""
       extension \(structDecl.name.trimmed): TrackingObject {      
       }
-      """ as DeclSyntax).cast(ExtensionDeclSyntax.self),
+      """ as DeclSyntax).cast(ExtensionDeclSyntax.self)
     ]
   }
 }
@@ -68,12 +68,27 @@ extension TrackingMacro: MemberAttributeMacro {
       return []
     }
 
+    let existingAttributes = variableDecl.attributes.map { $0.trimmed.description }
+
+    let ignoreMacros = Set(
+      [
+        "@TrackingIgnored",
+        "@PrimitiveTrackingProperty",
+        "@WeakTrackingProperty",
+        "@COWTrackingProperty",
+      ]
+    )
+
+    if existingAttributes.filter({ ignoreMacros.contains($0) }).count > 0 {
+      return []
+    }
+
     // to ignore computed properties
     for binding in variableDecl.bindings {
       if let accessorBlock = binding.accessorBlock {
         // Check if this is a computed property (has a 'get' accessor)
         // If it has only property observers like didSet/willSet, it's still a stored property
-        
+
         switch accessorBlock.accessors {
         case .accessors(let accessors):
           let hasGetter = accessors.contains { syntax in
@@ -85,18 +100,28 @@ extension TrackingMacro: MemberAttributeMacro {
           continue
         case .getter:
           return []
-        }        
+        }
       }
     }
-    
+
     guard variableDecl.bindingSpecifier.tokenKind == .keyword(.var) else {
       return []
     }
-    
+
     let isWeak = variableDecl.modifiers.contains { modifier in
       modifier.name.tokenKind == .keyword(.weak)
     }
-    
+
+    let isCOWType = KnownTypes.isCOWType(variableDecl.typeSyntax!.trimmed.description)
+
+    let isPrimitiveType = KnownTypes.isPrimitiveType(variableDecl.typeSyntax!.trimmed.description)
+
+    if isPrimitiveType || isCOWType {
+      return [
+        "@PrimitiveTrackingProperty"
+      ]
+    }
+
     if isWeak {
       return [AttributeSyntax(stringLiteral: "@WeakTrackingProperty")]
     } else {

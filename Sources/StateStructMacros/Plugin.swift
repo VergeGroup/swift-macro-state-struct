@@ -8,7 +8,7 @@ struct Plugin: CompilerPlugin {
   let providingMacros: [Macro.Type] = [
     TrackingMacro.self,
     COWTrackingPropertyMacro.self,
-    WeakTrackingPropertyMacro.self,
+    PrimitiveTrackingPropertyMacro.self,
     TrackingIgnoredMacro.self,
   ]
 }
