@@ -123,7 +123,7 @@ final class TrackingMacroTests: XCTestCase {
     } expansion: {
       """
       struct MyState {
-        @COWTrackingProperty
+        @PrimitiveTrackingProperty
 
         var stored_0: Int = 18 {
           didSet {
@@ -170,10 +170,10 @@ final class TrackingMacroTests: XCTestCase {
     } expansion: {
       """
       public struct MyState {
-        @COWTrackingProperty
+        @PrimitiveTrackingProperty
 
         private var stored_0: Int = 18
-        @COWTrackingProperty
+        @PrimitiveTrackingProperty
 
         var stored_1: String
 
@@ -185,7 +185,7 @@ final class TrackingMacroTests: XCTestCase {
           get { 0 }
           set { }
         }
-        @COWTrackingProperty
+        @PrimitiveTrackingProperty
 
         var height: Int
 
@@ -230,10 +230,10 @@ final class TrackingMacroTests: XCTestCase {
     } expansion: {
       """
       struct MyState {
-        @COWTrackingProperty
+        @PrimitiveTrackingProperty
 
         private var stored_0: Int = 18
-        @COWTrackingProperty
+        @PrimitiveTrackingProperty
 
         var stored_1: String
 
@@ -245,7 +245,7 @@ final class TrackingMacroTests: XCTestCase {
           get { 0 }
           set { }
         }
-        @COWTrackingProperty
+        @PrimitiveTrackingProperty
 
         var height: Int
 
@@ -261,6 +261,40 @@ final class TrackingMacroTests: XCTestCase {
     }
 
   }
+  
+  func test_cow_property() {
+    assertMacro {
+      """
+      @Tracking
+      struct MyState {
+        var string: String = ""
+        
+        var set: Set<Int> = []
+        
+        var customType: CustomType
+      }
+      """
+    } expansion: {
+      """
+      struct MyState {
+        @PrimitiveTrackingProperty
+        var string: String = ""
+        @PrimitiveTrackingProperty
+        
+        var set: Set<Int> = []
+        @COWTrackingProperty
+        
+        var customType: CustomType
+
+        internal var _tracking_context: _TrackingContext = .init()
+      }
+
+      extension MyState: TrackingObject {
+      }
+      """
+    }
+  }
+
 
   func test_weak_property() {
 
