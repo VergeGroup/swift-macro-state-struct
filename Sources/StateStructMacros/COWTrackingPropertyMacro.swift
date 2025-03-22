@@ -164,7 +164,7 @@ extension COWTrackingPropertyMacro: AccessorMacro {
         _tracking_context.trackingResultRef?.accessorRead(path: _tracking_context.path?.pushed(component))
 
         if var value = \(raw: backingName).value as? TrackingObject, let ref = _tracking_context.trackingResultRef {
-      	
+          
           if value._tracking_context.trackingResultRef !== ref {
             value._tracking_context = _TrackingContext(trackingResultRef: ref)
           }      

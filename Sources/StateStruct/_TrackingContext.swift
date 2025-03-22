@@ -1,7 +1,7 @@
 import os.lock
 import Foundation.NSThread
 
-public final class _TrackingContext: Sendable, Hashable {
+public struct _TrackingContext: Sendable, Hashable {
   
   public static func == (lhs: _TrackingContext, rhs: _TrackingContext) -> Bool {
     // ``_TrackingContext`` is used only for embedding into the struct.
@@ -34,22 +34,15 @@ public final class _TrackingContext: Sendable, Hashable {
       
   }
 
-  public let infoBox: OSAllocatedUnfairLock<Info>
+  private let infoBox: OSAllocatedUnfairLock<Info>
   
-  public func isEqual(to otherRef: TrackingResultRef) -> Bool {
-    infoBox.withLock { info in
-      info.currentResultRef === otherRef
-    }
-  }
-  
-  @inlinable
   public var path: PropertyPath? {
     get {
       infoBox.withLockUnchecked {
         $0.path
       }
     }
-    set {
+    nonmutating set {
       infoBox.withLockUnchecked {
         $0.path = newValue
       }
@@ -62,7 +55,7 @@ public final class _TrackingContext: Sendable, Hashable {
         $0.identifier
       }
     }
-    set {
+    nonmutating set {
       infoBox.withLockUnchecked {
         $0.identifier = newValue
       }
@@ -73,7 +66,7 @@ public final class _TrackingContext: Sendable, Hashable {
     get {
       infoBox.withLock { $0.currentResultRef }
     }
-    set {
+    nonmutating set {
       infoBox.withLock {
         $0.currentResultRef = newValue
       }

@@ -9,7 +9,7 @@ public protocol TrackingObject {
 extension TrackingObject {
    
   public var trackingResult: TrackingResult? {
-    _tracking_context.infoBox.withLock { $0.currentResultRef?.result }
+    _tracking_context.trackingResultRef?.result
   }
   
   public consuming func tracked(using graph: consuming PropertyNode? = nil) -> Self {
