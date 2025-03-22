@@ -143,8 +143,8 @@ extension COWTrackingPropertyMacro: AccessorMacro {
     
     let isConstant = variableDecl.bindingSpecifier.tokenKind == .keyword(.let)
     let propertyName = identifierPattern.identifier.text
-    let typeName = variableDecl.typeSyntax!.trimmed
     let backingName = "_backing_" + propertyName
+    let hasDidSet = variableDecl.didSetBlock != nil
     let hasWillSet = variableDecl.willSetBlock != nil
 
     let initAccessor = AccessorDeclSyntax(
@@ -158,23 +158,12 @@ extension COWTrackingPropertyMacro: AccessorMacro {
 
     let readAccessor = AccessorDeclSyntax(
       """
-      get {
-      
-        let component = PropertyPath.Component.init("\(raw: propertyName)")
-        _tracking_context.trackingResultRef?.accessorRead(path: _tracking_context.path?.pushed(component))
-
-        if var value = \(raw: backingName).value as? TrackingObject, let ref = _tracking_context.trackingResultRef {
-          
-          if value._tracking_context.trackingResultRef !== ref {
-            value._tracking_context = _TrackingContext(trackingResultRef: ref)
-          }      
-      
-          value._tracking_context.path = _tracking_context.path?.pushed(component)
-      
-          return value as! \(typeName)
-        }
-      
-        return \(raw: backingName).value        
+      get {            
+        return Tracking.processGet(
+          component: .init("\(raw: propertyName)"),
+          value: \(raw: backingName).value,
+          trackingContext: _tracking_context
+        )      
       }
       """
     )
@@ -186,10 +175,10 @@ extension COWTrackingPropertyMacro: AccessorMacro {
         // willset
         \(variableDecl.makeWillSetDoBlock())
       
-        if let ref = _tracking_context.trackingResultRef {      
-          ref.accessorSet(path: _tracking_context.path?.pushed(.init("\(raw: propertyName)")))      
-        }
+        _tracking_context.trackingResultRef?.accessorSet(path: _tracking_context.path?.pushed(.init("\(raw: propertyName)")))      
       
+        \(raw: hasDidSet ? "let oldValue = \(backingName).value" : "")
+
         if !isKnownUniquelyReferenced(&\(raw: backingName)) {
           \(raw: backingName) = .init(newValue)
         } else {
@@ -206,32 +195,19 @@ extension COWTrackingPropertyMacro: AccessorMacro {
       """
       _modify {
       
-        if let ref = _tracking_context.trackingResultRef {      
-          ref.accessorModify(path: _tracking_context.path?.pushed(.init("\(raw: propertyName)")))      
-        }
-      
         if !isKnownUniquelyReferenced(&\(raw: backingName)) {  
           \(raw: backingName) = .init(\(raw: backingName).value)
         }
+                          
+        \(raw: hasDidSet ? "let oldValue = \(backingName).value" : "")
       
-        let oldValue = \(raw: backingName).value
+        Tracking.processModify(
+          component: .init("\(raw: propertyName)"),
+          trackingContext: _tracking_context,
+          storage: \(raw: backingName)
+        )
       
-        if var value = \(raw: backingName).value as? TrackingObject,
-           let ref = _tracking_context.trackingResultRef {
-        
-          let component = PropertyPath.Component.init("\(raw: propertyName)")
-                      
-          if value._tracking_context.trackingResultRef !== ref {
-            value._tracking_context = _TrackingContext(trackingResultRef: ref)
-          }  
-          value._tracking_context.path = _tracking_context.path?.pushed(component)
-
-          \(raw: backingName).value = value as! \(typeName)
-                        
-          yield &\(raw: backingName).value
-        } else {            
-          yield &\(raw: backingName).value
-        }
+        yield &\(raw: backingName).value
             
         // didSet   
         \(variableDecl.makeDidSetDoBlock())

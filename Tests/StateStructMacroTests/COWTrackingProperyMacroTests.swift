@@ -62,22 +62,11 @@ final class COWTrackingProperyMacroTests: XCTestCase {
             print("stored_0 did set")
           }
           get {
-
-            let component = PropertyPath.Component.init("stored_0")
-            _tracking_context.trackingResultRef?.accessorRead(path: _tracking_context.path?.pushed(component))
-
-            if var value = _backing_stored_0.value as? TrackingObject, let ref = _tracking_context.trackingResultRef {
-
-              if value._tracking_context.trackingResultRef !== ref {
-                value._tracking_context = _TrackingContext(trackingResultRef: ref)
-              }
-
-              value._tracking_context.path = _tracking_context.path?.pushed(component)
-
-              return value as! Int
-            }
-
-            return _backing_stored_0.value
+            return Tracking.processGet(
+              component: .init("stored_0"),
+              value: _backing_stored_0.value,
+              trackingContext: _tracking_context
+            )
           }
 
           set {
@@ -86,9 +75,9 @@ final class COWTrackingProperyMacroTests: XCTestCase {
             do {
             }
 
-            if let ref = _tracking_context.trackingResultRef {
-              ref.accessorSet(path: _tracking_context.path?.pushed(.init("stored_0")))
-            }
+            _tracking_context.trackingResultRef?.accessorSet(path: _tracking_context.path?.pushed(.init("stored_0")))
+
+            let oldValue = _backing_stored_0.value
 
             if !isKnownUniquelyReferenced(&_backing_stored_0) {
               _backing_stored_0 = .init(newValue)
@@ -104,32 +93,19 @@ final class COWTrackingProperyMacroTests: XCTestCase {
 
           _modify {
 
-            if let ref = _tracking_context.trackingResultRef {
-              ref.accessorModify(path: _tracking_context.path?.pushed(.init("stored_0")))
-            }
-
             if !isKnownUniquelyReferenced(&_backing_stored_0) {
               _backing_stored_0 = .init(_backing_stored_0.value)
             }
 
             let oldValue = _backing_stored_0.value
 
-            if var value = _backing_stored_0.value as? TrackingObject,
-               let ref = _tracking_context.trackingResultRef {
+            Tracking.processModify(
+              component: .init("stored_0"),
+              trackingContext: _tracking_context,
+              storage: _backing_stored_0
+            )
 
-              let component = PropertyPath.Component.init("stored_0")
-
-              if value._tracking_context.trackingResultRef !== ref {
-                value._tracking_context = _TrackingContext(trackingResultRef: ref)
-              }
-              value._tracking_context.path = _tracking_context.path?.pushed(component)
-
-              _backing_stored_0.value = value as! Int
-
-              yield &_backing_stored_0.value
-            } else {
-              yield &_backing_stored_0.value
-            }
+            yield &_backing_stored_0.value
 
             // didSet   
             do {
@@ -152,22 +128,11 @@ final class COWTrackingProperyMacroTests: XCTestCase {
             print("stored_1 did set")
           }
           get {
-
-            let component = PropertyPath.Component.init("stored_1")
-            _tracking_context.trackingResultRef?.accessorRead(path: _tracking_context.path?.pushed(component))
-
-            if var value = _backing_stored_1.value as? TrackingObject, let ref = _tracking_context.trackingResultRef {
-
-              if value._tracking_context.trackingResultRef !== ref {
-                value._tracking_context = _TrackingContext(trackingResultRef: ref)
-              }
-
-              value._tracking_context.path = _tracking_context.path?.pushed(component)
-
-              return value as! Int
-            }
-
-            return _backing_stored_1.value
+            return Tracking.processGet(
+              component: .init("stored_1"),
+              value: _backing_stored_1.value,
+              trackingContext: _tracking_context
+            )
           }
 
           set {
@@ -177,9 +142,9 @@ final class COWTrackingProperyMacroTests: XCTestCase {
                   print("stored_1 will set")
                 }
 
-            if let ref = _tracking_context.trackingResultRef {
-              ref.accessorSet(path: _tracking_context.path?.pushed(.init("stored_1")))
-            }
+            _tracking_context.trackingResultRef?.accessorSet(path: _tracking_context.path?.pushed(.init("stored_1")))
+
+            let oldValue = _backing_stored_1.value
 
             if !isKnownUniquelyReferenced(&_backing_stored_1) {
               _backing_stored_1 = .init(newValue)
@@ -205,22 +170,11 @@ final class COWTrackingProperyMacroTests: XCTestCase {
             print("stored_2 will set")
           }      
           get {
-
-            let component = PropertyPath.Component.init("stored_2")
-            _tracking_context.trackingResultRef?.accessorRead(path: _tracking_context.path?.pushed(component))
-
-            if var value = _backing_stored_2.value as? TrackingObject, let ref = _tracking_context.trackingResultRef {
-
-              if value._tracking_context.trackingResultRef !== ref {
-                value._tracking_context = _TrackingContext(trackingResultRef: ref)
-              }
-
-              value._tracking_context.path = _tracking_context.path?.pushed(component)
-
-              return value as! Int
-            }
-
-            return _backing_stored_2.value
+            return Tracking.processGet(
+              component: .init("stored_2"),
+              value: _backing_stored_2.value,
+              trackingContext: _tracking_context
+            )
           }
 
           set {
@@ -230,9 +184,9 @@ final class COWTrackingProperyMacroTests: XCTestCase {
                   print("stored_2 will set")
                 }
 
-            if let ref = _tracking_context.trackingResultRef {
-              ref.accessorSet(path: _tracking_context.path?.pushed(.init("stored_2")))
-            }
+            _tracking_context.trackingResultRef?.accessorSet(path: _tracking_context.path?.pushed(.init("stored_2")))
+
+
 
             if !isKnownUniquelyReferenced(&_backing_stored_2) {
               _backing_stored_2 = .init(newValue)
@@ -287,32 +241,16 @@ final class COWTrackingProperyMacroTests: XCTestCase {
         }
           
         get {
-
           
-          let component = PropertyPath.Component.init("stored_1")
+          return Tracking.processGet(
           
-          _tracking_context.trackingResultRef?.accessorRead(path: _tracking_context.path?.pushed(component))
-
+            component: .init("stored_1"),
           
-          if var value = _backing_stored_1.value as? TrackingObject, let ref = _tracking_context.trackingResultRef {
-
+            value: _backing_stored_1.value,
           
-            if value._tracking_context.trackingResultRef !== ref {
+            trackingContext: _tracking_context
           
-              value._tracking_context = _TrackingContext(trackingResultRef: ref)
-          
-            }
-
-          
-            value._tracking_context.path = _tracking_context.path?.pushed(component)
-
-          
-            return value as! Int?
-          
-          }
-
-          
-          return _backing_stored_1.value
+          )
           
         }
           
@@ -326,11 +264,9 @@ final class COWTrackingProperyMacroTests: XCTestCase {
           }
 
           
-          if let ref = _tracking_context.trackingResultRef {
-          
-            ref.accessorSet(path: _tracking_context.path?.pushed(.init("stored_1")))
-          
-          }
+          _tracking_context.trackingResultRef?.accessorSet(path: _tracking_context.path?.pushed(.init("stored_1")))
+
+
 
           
           if !isKnownUniquelyReferenced(&_backing_stored_1) {
@@ -355,50 +291,27 @@ final class COWTrackingProperyMacroTests: XCTestCase {
         _modify {
 
           
-          if let ref = _tracking_context.trackingResultRef {
-          
-            ref.accessorModify(path: _tracking_context.path?.pushed(.init("stored_1")))
-          
-          }
-
-          
           if !isKnownUniquelyReferenced(&_backing_stored_1) {
           
             _backing_stored_1 = .init(_backing_stored_1.value)
           
           }
 
-          
-          let oldValue = _backing_stored_1.value
+
 
           
-          if var value = _backing_stored_1.value as? TrackingObject,
+          Tracking.processModify(
           
-             let ref = _tracking_context.trackingResultRef {
+            component: .init("stored_1"),
+          
+            trackingContext: _tracking_context,
+          
+            storage: _backing_stored_1
+          
+          )
 
           
-            let component = PropertyPath.Component.init("stored_1")
-
-          
-            if value._tracking_context.trackingResultRef !== ref {
-          
-              value._tracking_context = _TrackingContext(trackingResultRef: ref)
-          
-            }
-          
-            value._tracking_context.path = _tracking_context.path?.pushed(component)
-
-          
-            _backing_stored_1.value = value as! Int?
-
-          
-            yield &_backing_stored_1.value
-          
-          } else {
-          
-            yield &_backing_stored_1.value
-          
-          }
+          yield &_backing_stored_1.value
 
           
           // didSet   
@@ -446,22 +359,11 @@ final class COWTrackingProperyMacroTests: XCTestCase {
 
         private var stored_0: Int {
           get {
-
-            let component = PropertyPath.Component.init("stored_0")
-            _tracking_context.trackingResultRef?.accessorRead(path: _tracking_context.path?.pushed(component))
-
-            if var value = _backing_stored_0.value as? TrackingObject, let ref = _tracking_context.trackingResultRef {
-
-              if value._tracking_context.trackingResultRef !== ref {
-                value._tracking_context = _TrackingContext(trackingResultRef: ref)
-              }
-
-              value._tracking_context.path = _tracking_context.path?.pushed(component)
-
-              return value as! Int
-            }
-
-            return _backing_stored_0.value
+            return Tracking.processGet(
+              component: .init("stored_0"),
+              value: _backing_stored_0.value,
+              trackingContext: _tracking_context
+            )
           }
           set {
 
@@ -469,9 +371,9 @@ final class COWTrackingProperyMacroTests: XCTestCase {
             do {
             }
 
-            if let ref = _tracking_context.trackingResultRef {
-              ref.accessorSet(path: _tracking_context.path?.pushed(.init("stored_0")))
-            }
+            _tracking_context.trackingResultRef?.accessorSet(path: _tracking_context.path?.pushed(.init("stored_0")))
+
+
 
             if !isKnownUniquelyReferenced(&_backing_stored_0) {
               _backing_stored_0 = .init(newValue)
@@ -485,32 +387,19 @@ final class COWTrackingProperyMacroTests: XCTestCase {
           }
           _modify {
 
-            if let ref = _tracking_context.trackingResultRef {
-              ref.accessorModify(path: _tracking_context.path?.pushed(.init("stored_0")))
-            }
-
             if !isKnownUniquelyReferenced(&_backing_stored_0) {
               _backing_stored_0 = .init(_backing_stored_0.value)
             }
 
-            let oldValue = _backing_stored_0.value
 
-            if var value = _backing_stored_0.value as? TrackingObject,
-               let ref = _tracking_context.trackingResultRef {
 
-              let component = PropertyPath.Component.init("stored_0")
+            Tracking.processModify(
+              component: .init("stored_0"),
+              trackingContext: _tracking_context,
+              storage: _backing_stored_0
+            )
 
-              if value._tracking_context.trackingResultRef !== ref {
-                value._tracking_context = _TrackingContext(trackingResultRef: ref)
-              }
-              value._tracking_context.path = _tracking_context.path?.pushed(component)
-
-              _backing_stored_0.value = value as! Int
-
-              yield &_backing_stored_0.value
-            } else {
-              yield &_backing_stored_0.value
-            }
+            yield &_backing_stored_0.value
 
             // didSet   
             do {
@@ -526,22 +415,11 @@ final class COWTrackingProperyMacroTests: XCTestCase {
 
         public var stored_1: Int {
           get {
-
-            let component = PropertyPath.Component.init("stored_1")
-            _tracking_context.trackingResultRef?.accessorRead(path: _tracking_context.path?.pushed(component))
-
-            if var value = _backing_stored_1.value as? TrackingObject, let ref = _tracking_context.trackingResultRef {
-
-              if value._tracking_context.trackingResultRef !== ref {
-                value._tracking_context = _TrackingContext(trackingResultRef: ref)
-              }
-
-              value._tracking_context.path = _tracking_context.path?.pushed(component)
-
-              return value as! Int
-            }
-
-            return _backing_stored_1.value
+            return Tracking.processGet(
+              component: .init("stored_1"),
+              value: _backing_stored_1.value,
+              trackingContext: _tracking_context
+            )
           }
           set {
 
@@ -549,9 +427,9 @@ final class COWTrackingProperyMacroTests: XCTestCase {
             do {
             }
 
-            if let ref = _tracking_context.trackingResultRef {
-              ref.accessorSet(path: _tracking_context.path?.pushed(.init("stored_1")))
-            }
+            _tracking_context.trackingResultRef?.accessorSet(path: _tracking_context.path?.pushed(.init("stored_1")))
+
+
 
             if !isKnownUniquelyReferenced(&_backing_stored_1) {
               _backing_stored_1 = .init(newValue)
@@ -565,32 +443,19 @@ final class COWTrackingProperyMacroTests: XCTestCase {
           }
           _modify {
 
-            if let ref = _tracking_context.trackingResultRef {
-              ref.accessorModify(path: _tracking_context.path?.pushed(.init("stored_1")))
-            }
-
             if !isKnownUniquelyReferenced(&_backing_stored_1) {
               _backing_stored_1 = .init(_backing_stored_1.value)
             }
 
-            let oldValue = _backing_stored_1.value
 
-            if var value = _backing_stored_1.value as? TrackingObject,
-               let ref = _tracking_context.trackingResultRef {
 
-              let component = PropertyPath.Component.init("stored_1")
+            Tracking.processModify(
+              component: .init("stored_1"),
+              trackingContext: _tracking_context,
+              storage: _backing_stored_1
+            )
 
-              if value._tracking_context.trackingResultRef !== ref {
-                value._tracking_context = _TrackingContext(trackingResultRef: ref)
-              }
-              value._tracking_context.path = _tracking_context.path?.pushed(component)
-
-              _backing_stored_1.value = value as! Int
-
-              yield &_backing_stored_1.value
-            } else {
-              yield &_backing_stored_1.value
-            }
+            yield &_backing_stored_1.value
 
             // didSet   
             do {

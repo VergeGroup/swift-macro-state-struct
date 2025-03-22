@@ -41,11 +41,9 @@ public macro WeakTrackingProperty() =
 )
 @attached(peer, names: prefixed(`_backing_`))
 public macro PrimitiveTrackingProperty() =
-#externalMacro(module: "StateStructMacros", type: "PrimitiveTrackingPropertyMacro")
-
+  #externalMacro(module: "StateStructMacros", type: "PrimitiveTrackingPropertyMacro")
 
 #if DEBUG
-
 
   @Tracking
   struct OptinalPropertyState {
@@ -101,19 +99,37 @@ public macro PrimitiveTrackingProperty() =
       stored_1
     }
 
-    var subState: MySubState = .init()
+    var subState: MyTrackingSubState = .init()
+    
+    var noTrackingSubState: MyNoTrackingSubState = .init()
 
   }
 
   @Tracking
-  struct MySubState {
+  struct MyTrackingSubState {
 
     var stored_1: Int = 18
 
     var computed_1: Int {
       stored_1
     }
-    
+
+    weak var weak_stored: Ref?
+
+    init() {
+
+    }
+
+  }
+
+  struct MyNoTrackingSubState {
+
+    var stored_1: Int = 18
+
+    var computed_1: Int {
+      stored_1
+    }
+
     weak var weak_stored: Ref?
 
     init() {
