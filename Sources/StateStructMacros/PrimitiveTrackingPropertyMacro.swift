@@ -4,7 +4,7 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
-public struct WeakTrackingPropertyMacro {
+public struct PrimitiveTrackingPropertyMacro {
   
   public enum Error: Swift.Error {
     case needsTypeAnnotation
@@ -12,7 +12,7 @@ public struct WeakTrackingPropertyMacro {
   
 }
 
-extension WeakTrackingPropertyMacro: PeerMacro {
+extension PrimitiveTrackingPropertyMacro: PeerMacro {
   public static func expansion(
     of node: AttributeSyntax,
     providingPeersOf declaration: some DeclSyntaxProtocol,
@@ -61,7 +61,7 @@ extension WeakTrackingPropertyMacro: PeerMacro {
   }
 }
 
-extension WeakTrackingPropertyMacro: AccessorMacro {
+extension PrimitiveTrackingPropertyMacro: AccessorMacro {
   public static func expansion(
     of node: SwiftSyntax.AttributeSyntax,
     providingAccessorsOf declaration: some SwiftSyntax.DeclSyntaxProtocol,

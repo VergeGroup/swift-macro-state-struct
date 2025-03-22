@@ -14,6 +14,46 @@ final class TrackingMacroTests: XCTestCase {
       super.invokeTest()
     }
   }
+  
+  func test_array_dictionary() {
+    assertMacro {
+      """
+      @Tracking
+      struct MyState {
+      
+        var array: [Int] = []
+      
+        var dictionary: [String: Int] = [:]
+          
+        var array1: Array<Int> = []
+      
+        var dictionary1: Dictionary<String, Int> = [:]
+      }
+      """
+    } expansion: {
+      """
+      struct MyState {
+        @PrimitiveTrackingProperty
+
+        var array: [Int] = []
+        @PrimitiveTrackingProperty
+
+        var dictionary: [String: Int] = [:]
+        @PrimitiveTrackingProperty
+          
+        var array1: Array<Int> = []
+        @PrimitiveTrackingProperty
+
+        var dictionary1: Dictionary<String, Int> = [:]
+
+        internal var _tracking_context: _TrackingContext = .init()
+      }
+
+      extension MyState: TrackingObject {
+      }
+      """
+    }
+  }
 
   func test_ignore_computed() {
 

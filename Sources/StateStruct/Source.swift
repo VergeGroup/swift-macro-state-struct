@@ -33,7 +33,16 @@ public macro COWTrackingProperty() =
 )
 @attached(peer, names: prefixed(`_backing_`))
 public macro WeakTrackingProperty() =
-  #externalMacro(module: "StateStructMacros", type: "WeakTrackingPropertyMacro")
+  #externalMacro(module: "StateStructMacros", type: "PrimitiveTrackingPropertyMacro")
+
+@attached(
+  accessor,
+  names: named(init), named(_read), named(set), named(_modify)
+)
+@attached(peer, names: prefixed(`_backing_`))
+public macro PrimitiveTrackingProperty() =
+#externalMacro(module: "StateStructMacros", type: "PrimitiveTrackingPropertyMacro")
+
 
 #if DEBUG
 
