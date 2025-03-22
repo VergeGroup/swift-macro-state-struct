@@ -9,9 +9,15 @@ struct TrackingTests {
 
     var original = MyState.init()
 
-    let result = original.tracking {
-      original.height = 100
-    }
+    original.startNewTracking()
+    original.height = 100
+    let result = original.trackingResult!
+    
+    original.endTracking()
+    
+    _ = original.name
+    
+    #expect(original.trackingResult == nil)
 
     #expect(
       result.graph.prettyPrint() == """
@@ -28,9 +34,9 @@ struct TrackingTests {
 
     var original = MyState.init()
 
-    let result = original.tracking {
-      original.nested.name = "AAA"
-    }
+    original.startNewTracking()
+    original.nested.name = "AAA"
+    let result = original.trackingResult!
 
     #expect(
       result.graph.prettyPrint() == """
@@ -43,15 +49,82 @@ struct TrackingTests {
     )
 
   }
-  //
+  
+  @Test
+  func tracking_write_nested_stored_property_escaping() async {
+    
+    let base = SendableState.init()
+    
+    do {
+      var a = base.tracked()
+      a.level1.name = "AAA"
+      
+      await Task {
+        a.level1.level2.age = 100
+      }
+      .value
+      
+      let level2 = a.level1.level2
+      
+      await Task {
+        _ = level2.name
+      }
+      .value
+            
+      let result = a.trackingResult!
+      
+      #expect(
+        result.graph.prettyPrint() == 
+      """
+      StateStructTests.SendableState {
+        level1-(1)+(2) {
+          name+(1)
+          level2-(1)+(1) {
+            age+(1)
+            name-(1)
+          }
+        }
+      }
+      """
+      )
+    }
+    
+    do {
+      let a = base.tracked()
+      _ = a.level1.name
+      
+      await Task {
+        _ = a.level1.level2.age
+      }
+      .value
+      
+      let result = a.trackingResult!
+      
+      #expect(
+        result.graph.prettyPrint() == 
+      """
+      StateStructTests.SendableState {
+        level1-(2) {
+          name-(1)
+          level2-(1) {
+            age-(1)
+          }
+        }
+      }
+      """
+      )
+    }
+    
+  }
+
   @Test
   func tracking_read_nested_stored_property() {
 
-    let original = MyState.init()
+    var original = MyState.init()
 
-    let result = original.tracking {
-      _ = original.nested.name
-    }
+    original.startNewTracking()
+    _ = original.nested.name
+    let result = original.trackingResult!
 
     #expect(
       result.graph.prettyPrint() == """
@@ -68,11 +141,11 @@ struct TrackingTests {
   @Test
   func read_computed_property() {
 
-    let original = MyState.init()
+    var original = MyState.init()
 
-    let result = original.tracking {
-      _ = original.computedName
-    }
+    original.startNewTracking()
+    _ = original.computedName
+    let result = original.trackingResult!
 
     #expect(
       result.graph.prettyPrint() == """
@@ -86,11 +159,11 @@ struct TrackingTests {
 
   @Test
   func read_over_function() {
-    let original = MyState.init()
+    var original = MyState.init()
 
-    let result = original.tracking {
-      _ = original.customDescription()
-    }
+    original.startNewTracking()
+    _ = original.customDescription()
+    let result = original.trackingResult!
 
     #expect(
       result.graph.prettyPrint() == """
@@ -105,11 +178,11 @@ struct TrackingTests {
   @Test
   func tracking_nest() {
 
-    let original = Nesting.init()
+    var original = Nesting.init()
 
-    let result = original.tracking {
-      _ = original._1?._2?.value
-    }
+    original.startNewTracking()
+    _ = original._1?._2?.value
+    let result = original.trackingResult!
 
     #expect(
       result.graph.prettyPrint() == """
@@ -129,9 +202,9 @@ struct TrackingTests {
 
     var original = Nesting.init()
 
-    let result = original.tracking {
-      original._1?._1?.value = "AAA"
-    }
+    original.startNewTracking()
+    original._1?._1?.value = "AAA"
+    let result = original.trackingResult!
 
     #expect(
       result.graph.prettyPrint() == """
@@ -149,13 +222,12 @@ struct TrackingTests {
   @Test
   func tracking_nest_detaching() {
 
-    let original = Nesting.init()
+    var original = Nesting.init()
 
-    let result = original.tracking {
-      let sub = original._1
-
-      _ = sub?._1?.value
-    }
+    original.startNewTracking()
+    let sub = original._1
+    _ = sub?._1?.value
+    let result = original.trackingResult!
 
     #expect(
       result.graph.prettyPrint() == """
@@ -168,7 +240,6 @@ struct TrackingTests {
         }
         """
     )
-
   }
 
   @Test
@@ -176,9 +247,9 @@ struct TrackingTests {
 
     var original = Nesting.init()
 
-    let result = original.tracking {
-      original._1 = .init(_1: nil, _2: nil, _3: nil)
-    }
+    original.startNewTracking()
+    original._1 = .init(_1: nil, _2: nil, _3: nil)
+    let result = original.trackingResult!
 
     #expect(
       result.graph.prettyPrint() == """
@@ -187,7 +258,6 @@ struct TrackingTests {
         }
         """
     )
-
   }
 
   @Test
@@ -195,9 +265,9 @@ struct TrackingTests {
 
     var original = Nesting.init()
 
-    let result = original.tracking {
-      original._1?._1 = .init(_1: nil, _2: nil, _3: nil)
-    }
+    original.startNewTracking()
+    original._1?._1 = .init(_1: nil, _2: nil, _3: nil)
+    let result = original.trackingResult!
 
     #expect(
       result.graph.prettyPrint() == """
@@ -208,18 +278,17 @@ struct TrackingTests {
         }
         """
     )
-
   }
 
   @Test
   func tracking_1() {
 
-    let original = Nesting.init()
+    var original = Nesting.init()
 
-    let result = original.tracking {
-      _ = original._1?._1
-      _ = original._1
-    }
+    original.startNewTracking()
+    _ = original._1?._1
+    _ = original._1
+    let result = original.trackingResult!
 
     #expect(
       result.graph.shakedAsRead().prettyPrint() == """
@@ -228,23 +297,17 @@ struct TrackingTests {
         }
         """
     )
-
   }
 
-  /**
-   A case of detaching a nested object and then modifying it.
-   which means the original object is not modified.
-   */
   @Test
   func tracking_nest_detaching_write() {
 
-    let original = Nesting.init()
+    var original = Nesting.init()
 
-    var result = original.tracking {
-      var sub = original._1
-
-      sub?._1?.value = "AAA"
-    }
+    original.startNewTracking()
+    var sub = original._1
+    sub?._1?.value = "AAA"
+    var result = original.trackingResult!
 
     result.graph.shakeAsWrite()
 
@@ -253,7 +316,6 @@ struct TrackingTests {
         StateStructTests.Nesting
         """
     )
-
   }
 
   @Test
@@ -265,9 +327,9 @@ struct TrackingTests {
       value = "AAA"
     }
 
-    let result = original.tracking {
-      update(&original.nested.name)
-    }
+    original.startNewTracking()
+    update(&original.nested.name)
+    let result = original.trackingResult!
 
     #expect(
       result.graph.prettyPrint() == """
@@ -286,9 +348,9 @@ struct TrackingTests {
     try await withThrowingTaskGroup(of: Void.self) { group in
       group.addTask {
         var original = MyState.init()
-        let result1 = original.tracking {
-          original.height = 100
-        }
+        original.startNewTracking()
+        original.height = 100
+        let result1 = original.trackingResult!
 
         #expect(
           result1.graph.prettyPrint() == """
@@ -301,9 +363,9 @@ struct TrackingTests {
 
       group.addTask {
         var original = MyState.init()
-        let result2 = original.tracking {
-          original.nested.name = "AAA"
-        }
+        original.startNewTracking()
+        original.nested.name = "AAA"
+        let result2 = original.trackingResult!
 
         #expect(
           result2.graph.prettyPrint() == """
@@ -323,14 +385,13 @@ struct TrackingTests {
   @Test
   func write_is_empty() {
 
-    let original = MyState.init()
+    var original = MyState.init()
 
-    var result = original.tracking {
-      _ = original.nested.name
-
-      var nested = original.nested
-      nested.name = "AAA"
-    }
+    original.startNewTracking()
+    _ = original.nested.name
+    var nested = original.nested
+    nested.name = "AAA"
+    var result = original.trackingResult!
 
     result.graph.shakeAsWrite()
 
@@ -339,7 +400,6 @@ struct TrackingTests {
     #expect(
       result.graph.isEmpty == true
     )
-
   }
 
   @Test
@@ -353,9 +413,9 @@ struct TrackingTests {
       value.age = 100
     }
 
-    let result = original.tracking {
-      update(&original.nested)
-    }
+    original.startNewTracking()
+    update(&original.nested)
+    let result = original.trackingResult!
 
     #expect(
       result.graph.prettyPrint() == """
@@ -375,15 +435,12 @@ struct TrackingTests {
     var original = MyState.init()
 
     func update(_ value: inout MyState.Nested) {
-      let r = value.tracking {
-        value = .init(name: "AAA")
-      }
-      print(r.graph.prettyPrint())
+      value = .init(name: "AAA")
     }
 
-    let result = original.tracking {
-      update(&original.nested)
-    }
+    original.startNewTracking()
+    update(&original.nested)
+    let result = original.trackingResult!
 
     #expect(
       result.graph.prettyPrint() == """
@@ -403,9 +460,9 @@ struct TrackingTests {
 
     }
 
-    let result = original.tracking {
-      update(&original)
-    }
+    original.startNewTracking()
+    update(&original)
+    let result = original.trackingResult!
 
     #expect(
       result.graph.prettyPrint() == """
@@ -417,11 +474,11 @@ struct TrackingTests {
   @Test
   func referencing() {
 
-    let tree = Tree(another: .init(wrappedValue: .init()))
+    var tree = Tree(another: .init(wrappedValue: .init()))
 
-    let result = tree.tracking {
-      _ = tree.another?.value
-    }
+    tree.startNewTracking()
+    _ = tree.another?.value
+    let result = tree.trackingResult!
 
     #expect(
       result.graph.prettyPrint() == """
@@ -439,11 +496,11 @@ struct TrackingTests {
   @Test
   func weakRef() {
     
-    let state = MyState.init()
+    var state = MyState.init()
     
-    let result = state.tracking {
-      _ = state.weak_ref
-    }
+    state.startNewTracking()
+    _ = state.weak_ref
+    let result = state.trackingResult!
     
     #expect(
       result.graph.prettyPrint() == """

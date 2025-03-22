@@ -14,6 +14,46 @@ final class TrackingMacroTests: XCTestCase {
       super.invokeTest()
     }
   }
+  
+  func test_array_dictionary() {
+    assertMacro {
+      """
+      @Tracking
+      struct MyState {
+      
+        var array: [Int] = []
+      
+        var dictionary: [String: Int] = [:]
+          
+        var array1: Array<Int> = []
+      
+        var dictionary1: Dictionary<String, Int> = [:]
+      }
+      """
+    } expansion: {
+      """
+      struct MyState {
+        @PrimitiveTrackingProperty
+
+        var array: [Int] = []
+        @PrimitiveTrackingProperty
+
+        var dictionary: [String: Int] = [:]
+        @PrimitiveTrackingProperty
+          
+        var array1: Array<Int> = []
+        @PrimitiveTrackingProperty
+
+        var dictionary1: Dictionary<String, Int> = [:]
+
+        internal var _tracking_context: _TrackingContext = .init()
+      }
+
+      extension MyState: TrackingObject {
+      }
+      """
+    }
+  }
 
   func test_ignore_computed() {
 
@@ -54,7 +94,7 @@ final class TrackingMacroTests: XCTestCase {
           set { }
         }
 
-        internal let _tracking_context: _TrackingContext = .init()
+        internal var _tracking_context: _TrackingContext = .init()
           
       }
 
@@ -83,7 +123,7 @@ final class TrackingMacroTests: XCTestCase {
     } expansion: {
       """
       struct MyState {
-        @COWTrackingProperty
+        @PrimitiveTrackingProperty
 
         var stored_0: Int = 18 {
           didSet {
@@ -91,7 +131,7 @@ final class TrackingMacroTests: XCTestCase {
           }
         }
 
-        internal let _tracking_context: _TrackingContext = .init()
+        internal var _tracking_context: _TrackingContext = .init()
           
       }
 
@@ -130,10 +170,10 @@ final class TrackingMacroTests: XCTestCase {
     } expansion: {
       """
       public struct MyState {
-        @COWTrackingProperty
+        @PrimitiveTrackingProperty
 
         private var stored_0: Int = 18
-        @COWTrackingProperty
+        @PrimitiveTrackingProperty
 
         var stored_1: String
 
@@ -145,14 +185,14 @@ final class TrackingMacroTests: XCTestCase {
           get { 0 }
           set { }
         }
-        @COWTrackingProperty
+        @PrimitiveTrackingProperty
 
         var height: Int
 
         func compute() {
         }
 
-        public let _tracking_context: _TrackingContext = .init()
+        public var _tracking_context: _TrackingContext = .init()
       }
 
       extension MyState: TrackingObject {
@@ -190,10 +230,10 @@ final class TrackingMacroTests: XCTestCase {
     } expansion: {
       """
       struct MyState {
-        @COWTrackingProperty
+        @PrimitiveTrackingProperty
 
         private var stored_0: Int = 18
-        @COWTrackingProperty
+        @PrimitiveTrackingProperty
 
         var stored_1: String
 
@@ -205,14 +245,14 @@ final class TrackingMacroTests: XCTestCase {
           get { 0 }
           set { }
         }
-        @COWTrackingProperty
+        @PrimitiveTrackingProperty
 
         var height: Int
 
         func compute() {
         }
 
-        internal let _tracking_context: _TrackingContext = .init()
+        internal var _tracking_context: _TrackingContext = .init()
       }
 
       extension MyState: TrackingObject {
@@ -221,6 +261,40 @@ final class TrackingMacroTests: XCTestCase {
     }
 
   }
+  
+  func test_cow_property() {
+    assertMacro {
+      """
+      @Tracking
+      struct MyState {
+        var string: String = ""
+        
+        var set: Set<Int> = []
+        
+        var customType: CustomType
+      }
+      """
+    } expansion: {
+      """
+      struct MyState {
+        @PrimitiveTrackingProperty
+        var string: String = ""
+        @PrimitiveTrackingProperty
+        
+        var set: Set<Int> = []
+        @COWTrackingProperty
+        
+        var customType: CustomType
+
+        internal var _tracking_context: _TrackingContext = .init()
+      }
+
+      extension MyState: TrackingObject {
+      }
+      """
+    }
+  }
+
 
   func test_weak_property() {
 
@@ -240,7 +314,7 @@ final class TrackingMacroTests: XCTestCase {
 
         weak var weak_stored: Ref?      
 
-        internal let _tracking_context: _TrackingContext = .init()
+        internal var _tracking_context: _TrackingContext = .init()
 
       }
 

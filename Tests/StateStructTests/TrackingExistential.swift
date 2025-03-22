@@ -35,11 +35,11 @@ struct TrackingExistential {
   
   @Test func tracking() {
     
-    let original = Root(ui: UI(count: 1))
+    var original = Root(ui: UI(count: 1))
     
-    let reading = original.tracking {
-      _ = original.ui?.count
-    }
+    original.startNewTracking()
+    _ = original.ui?.count
+    let reading = original.trackingResult!
         
     #expect(
       reading.graph.prettyPrint() == """

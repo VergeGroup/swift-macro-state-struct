@@ -9,13 +9,13 @@ struct UpdatingTests {
 
     var state = MyState()
 
-    let reading = state.tracking {
-      _ = state.height
-    }
+    state.startNewTracking()
+    _ = state.height
+    let reading = state.trackingResult!
 
-    let writing = state.tracking {
-      state.height = 200
-    }
+    state.startNewTracking()
+    state.height = 200
+    let writing = state.trackingResult!
 
     let hasChangesInReading = PropertyNode.hasChanges(
       writeGraph: writing.graph,
@@ -30,13 +30,13 @@ struct UpdatingTests {
 
     var state = MyState()
 
-    let reading = state.tracking {
-      _ = state.nested.name
-    }
+    state.startNewTracking()
+    _ = state.nested.name
+    let reading = state.trackingResult!
 
-    let writing = state.tracking {
-      state.nested = .init(name: "Foo")
-    }
+    state.startNewTracking()
+    state.nested = .init(name: "Foo")
+    let writing = state.trackingResult!
 
     let hasChangesInReading = PropertyNode.hasChanges(
       writeGraph: writing.graph,
@@ -51,13 +51,13 @@ struct UpdatingTests {
 
     var state = MyState()
 
-    let reading = state.tracking {
-      _ = state.nested.name
-    }
+    state.startNewTracking()
+    _ = state.nested.name
+    let reading = state.trackingResult!
 
-    let writing = state.tracking {
-      state.nested.age = 100
-    }
+    state.startNewTracking()
+    state.nested.age = 100
+    let writing = state.trackingResult!
 
     let hasChangesInReading = PropertyNode.hasChanges(
       writeGraph: writing.graph,
@@ -72,13 +72,13 @@ struct UpdatingTests {
 
     var state = MyState()
 
-    let reading = state.tracking {
-      _ = state.nested
-    }
+    state.startNewTracking()
+    _ = state.nested
+    let reading = state.trackingResult!
 
-    let writing = state.tracking {
-      state.nested.age = 100
-    }
+    state.startNewTracking()
+    state.nested.age = 100
+    let writing = state.trackingResult!
 
     let hasChangesInReading = PropertyNode.hasChanges(
       writeGraph: writing.graph,
@@ -93,17 +93,17 @@ struct UpdatingTests {
 
     var state = Nesting()
 
-    let reading = state.tracking {
-      _ = state._1?.value
-      _ = state._2?._1?.value
-      _ = state._3?._2?.value
-    }
+    state.startNewTracking()
+    _ = state._1?.value
+    _ = state._2?._1?.value
+    _ = state._3?._2?.value
+    let reading = state.trackingResult!
 
     print("reading", reading.graph.prettyPrint())
 
-    let writing = state.tracking {
-      state._3?._2?.value = "3.2"
-    }
+    state.startNewTracking()
+    state._3?._2?.value = "3.2"
+    let writing = state.trackingResult!
 
     let hasChangesInReading = PropertyNode.hasChanges(
       writeGraph: writing.graph,
@@ -111,7 +111,6 @@ struct UpdatingTests {
     )
 
     #expect(hasChangesInReading == true)
-
   }
 
   @Test
@@ -119,22 +118,19 @@ struct UpdatingTests {
 
     var state = Nesting()
 
-    var reading = state.tracking {
-      _ = state._2
-      //      _ = state._2?._1?.value
-      _ = state._2?._1?.value
-      //      _ = state._3?._1
-      //      _ = state._3?._2?.value
-    }
+    state.startNewTracking()
+    _ = state._2
+    _ = state._2?._1?.value
+    var reading = state.trackingResult!
 
     reading.graph.shakeAsRead()
 
     print("reading", reading.graph.prettyPrint())
 
-    let writing = state.tracking {
-      state._2?.value = "2.1"
-      state._3?._2?.value = "3.2"
-    }
+    state.startNewTracking()
+    state._2?.value = "2.1"
+    state._3?._2?.value = "3.2"
+    let writing = state.trackingResult!
 
     let hasChangesInReading = PropertyNode.hasChanges(
       writeGraph: writing.graph,
@@ -142,7 +138,6 @@ struct UpdatingTests {
     )
 
     #expect(hasChangesInReading == true)
-
   }
 
   @Test
@@ -150,19 +145,17 @@ struct UpdatingTests {
 
     var state = Nesting()
 
-    let reading = state.tracking {
-      _ = state._2
-      _ = state._2?._1?.value
-      //      _ = state._3?._1
-      //      _ = state._3?._2?.value
-    }
+    state.startNewTracking()
+    _ = state._2
+    _ = state._2?._1?.value
+    let reading = state.trackingResult!
 
     print("reading", reading.graph.prettyPrint())
 
-    let writing = state.tracking {
-      state._2?.value = "2.1"
-      state._2 = .init()
-    }
+    state.startNewTracking()
+    state._2?.value = "2.1"
+    state._2 = .init()
+    let writing = state.trackingResult!
 
     let hasChangesInReading = PropertyNode.hasChanges(
       writeGraph: writing.graph,
@@ -170,29 +163,28 @@ struct UpdatingTests {
     )
 
     #expect(hasChangesInReading == true)
-
   }
 
   @Test
   func complex() {
 
-    let original = Nesting.init()
-    let result = original.tracking {
-      let sub1 = original._1
-      let sub2 = original._2
-      let sub3 = original._3
+    var original = Nesting.init()
+    original.startNewTracking()
+    let sub1 = original._1
+    let sub2 = original._2
+    let sub3 = original._3
 
-      _ = sub1?._3?.value
-      _ = sub1?._2?.value
-      _ = sub1?._1?.value
+    _ = sub1?._3?.value
+    _ = sub1?._2?.value
+    _ = sub1?._1?.value
 
-      _ = sub2?._2?.value
-      _ = sub2?._1?.value
+    _ = sub2?._2?.value
+    _ = sub2?._1?.value
 
-      _ = sub3?._1?.value
-      _ = sub3?._2?.value
-      _ = sub3?._3?.value
-    }
+    _ = sub3?._1?.value
+    _ = sub3?._2?.value
+    _ = sub3?._3?.value
+    let result = original.trackingResult!
 
     print("👨🏻")
 
