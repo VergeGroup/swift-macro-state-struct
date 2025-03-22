@@ -42,16 +42,16 @@ struct MyState {
 
 var state = MyState()
 
-// Tracking read operations
-let readTracking = state.tracking {
-    _ = state.height
-    _ = state.nested.name
-}
+// Start tracking and record read operations
+state.startNewTracking()
+_ = state.height
+_ = state.nested.name
+let readTracking = state.trackingResult!
 
-// Tracking write operations
-let writeTracking = state.tracking {
-    state.height = 200
-}
+// Start tracking and record write operations
+state.startNewTracking()
+state.height = 200
+let writeTracking = state.trackingResult!
 
 // Change detection: compare dependency graphs to determine if a change occurred
 let hasChanged = PropertyNode.hasChanges(
@@ -68,42 +68,42 @@ Test Cases in UpdatingTests.swift:
 1. Nested Property Access and Modification
    ```swift
    // Reading nested.name
-   let reading = state.tracking {
-     _ = state.nested.name  
-   }
+   state.startNewTracking()
+   _ = state.nested.name
+   let reading = state.trackingResult!
    
    // Writing to nested.name
-   let writing = state.tracking {
-     state.nested = .init(name: "Foo")
-   }
+   state.startNewTracking()
+   state.nested = .init(name: "Foo")
+   let writing = state.trackingResult!
    // Result: Change detected ✅
    ```
 
 2. Unrelated Property Changes
    ```swift
    // Reading nested.name
-   let reading = state.tracking {
-     _ = state.nested.name
-   }
+   state.startNewTracking()
+   _ = state.nested.name
+   let reading = state.trackingResult!
    
    // Writing to unrelated nested.age
-   let writing = state.tracking {
-     state.nested.age = 100  
-   }
+   state.startNewTracking()
+   state.nested.age = 100
+   let writing = state.trackingResult!
    // Result: No change detected ❌
    ```
 
 3. Broad vs Narrow Tracking
    ```swift
    // Reading entire nested object
-   let reading = state.tracking {
-     _ = state.nested // Tracks all nested properties
-   }
+   state.startNewTracking()
+   _ = state.nested // Tracks all nested properties
+   let reading = state.trackingResult!
    
    // Writing to one nested field
-   let writing = state.tracking {
-     state.nested.age = 100
-   }
+   state.startNewTracking()
+   state.nested.age = 100
+   let writing = state.trackingResult!
    // Result: Change detected ✅ (since we're watching all of nested)
    ```
 
