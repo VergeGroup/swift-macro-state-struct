@@ -1,7 +1,7 @@
 import Foundation
 import os.lock
 
-public enum Tracking {
+public enum TrackingRuntime {
 
   /// no tracking
   @usableFromInline

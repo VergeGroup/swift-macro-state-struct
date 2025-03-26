@@ -62,7 +62,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
             print("stored_0 did set")
           }
           get {
-            return Tracking.processGet(
+            return TrackingRuntime.processGet(
               component: .init("stored_0"),
               value: _backing_stored_0.value,
               trackingContext: _tracking_context
@@ -99,7 +99,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
 
             let oldValue = _backing_stored_0.value
 
-            Tracking.processModify(
+            TrackingRuntime.processModify(
               component: .init("stored_0"),
               trackingContext: _tracking_context,
               storage: _backing_stored_0
@@ -128,7 +128,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
             print("stored_1 did set")
           }
           get {
-            return Tracking.processGet(
+            return TrackingRuntime.processGet(
               component: .init("stored_1"),
               value: _backing_stored_1.value,
               trackingContext: _tracking_context
@@ -170,7 +170,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
             print("stored_2 will set")
           }      
           get {
-            return Tracking.processGet(
+            return TrackingRuntime.processGet(
               component: .init("stored_2"),
               value: _backing_stored_2.value,
               trackingContext: _tracking_context
@@ -242,7 +242,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
           
         get {
           
-          return Tracking.processGet(
+          return TrackingRuntime.processGet(
           
             component: .init("stored_1"),
           
@@ -300,7 +300,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
 
 
           
-          Tracking.processModify(
+          TrackingRuntime.processModify(
           
             component: .init("stored_1"),
           
@@ -359,7 +359,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
 
         private var stored_0: Int {
           get {
-            return Tracking.processGet(
+            return TrackingRuntime.processGet(
               component: .init("stored_0"),
               value: _backing_stored_0.value,
               trackingContext: _tracking_context
@@ -393,7 +393,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
 
 
 
-            Tracking.processModify(
+            TrackingRuntime.processModify(
               component: .init("stored_0"),
               trackingContext: _tracking_context,
               storage: _backing_stored_0
@@ -415,7 +415,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
 
         public var stored_1: Int {
           get {
-            return Tracking.processGet(
+            return TrackingRuntime.processGet(
               component: .init("stored_1"),
               value: _backing_stored_1.value,
               trackingContext: _tracking_context
@@ -449,7 +449,7 @@ final class COWTrackingProperyMacroTests: XCTestCase {
 
 
 
-            Tracking.processModify(
+            TrackingRuntime.processModify(
               component: .init("stored_1"),
               trackingContext: _tracking_context,
               storage: _backing_stored_1
