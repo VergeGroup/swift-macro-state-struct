@@ -159,7 +159,7 @@ extension COWTrackingPropertyMacro: AccessorMacro {
     let readAccessor = AccessorDeclSyntax(
       """
       get {            
-        return Tracking.processGet(
+        return TrackingRuntime.processGet(
           component: .init("\(raw: propertyName)"),
           value: \(raw: backingName).value,
           trackingContext: _tracking_context
@@ -201,7 +201,7 @@ extension COWTrackingPropertyMacro: AccessorMacro {
                           
         \(raw: hasDidSet ? "let oldValue = \(backingName).value" : "")
       
-        Tracking.processModify(
+        TrackingRuntime.processModify(
           component: .init("\(raw: propertyName)"),
           trackingContext: _tracking_context,
           storage: \(raw: backingName)
