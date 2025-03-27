@@ -11,8 +11,13 @@ public enum TrackingRuntime {
     trackingContext: borrowing _TrackingContext
   ) -> Value {
 
-    trackingContext.trackingResultRef?.accessorRead(path: trackingContext.path?.pushed(component))
-
+    if 
+      let ref = trackingContext.trackingResultRef,
+      let path = trackingContext.path
+    {
+      ref.accessorRead(path: path.pushed(component))
+    }
+      
     if var value = value as? TrackingObject, let ref = trackingContext.trackingResultRef {
 
       if value._tracking_context.trackingResultRef !== ref {

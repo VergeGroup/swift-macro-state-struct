@@ -1,5 +1,6 @@
 
-public struct PropertyPath: Equatable {
+@DebugDescription
+public struct PropertyPath: Equatable, CustomDebugStringConvertible {
 
   public struct Component: Equatable {
 
@@ -11,7 +12,13 @@ public struct PropertyPath: Equatable {
 
   }
 
-  public var components: [Component] = []
+  public var components: [Component] = [] {
+    didSet {
+      #if DEBUG
+      _joined = components.map { $0.value }.joined(separator: ".")
+      #endif
+    }
+  }
 
   public init() {
 
@@ -26,5 +33,19 @@ public struct PropertyPath: Equatable {
     self.components.append(component)
     return self
   }
+  
+  #if DEBUG
+  private var _joined: String = ""
+  #endif
+  
+  #if DEBUG
+  public var debugDescription: String {
+    "\(_joined) \(components.count)"
+  }
+  #else
+  public var debugDescription: String {
+    "Components : \(components.count)"
+  }
+  #endif
 
 }
