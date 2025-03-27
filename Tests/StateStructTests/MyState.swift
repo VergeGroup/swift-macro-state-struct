@@ -589,6 +589,9 @@ struct MyState {
 
   var nested: Nested = .init(name: "")
   var nestedAttached: NestedAttached = .init(name: "")
+  
+  var optional_custom_type: CustomType?
+  var optional_int: Int?
 
   @Tracking
   struct Nested {
@@ -609,4 +612,8 @@ struct MyState {
     self.name = "Hiroshi"
   }
 
+}
+
+enum CustomType {
+  case a
 }
