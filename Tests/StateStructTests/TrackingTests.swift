@@ -24,6 +24,27 @@ struct TrackingTests {
     )
     
   }
+  
+  @Test
+  func read_optional_int() {
+    
+    var original = MyState.init()
+    
+    original.startNewTracking()
+    _ = original.optional_int
+    let result = original.trackingResult!
+    
+    original.endTracking()
+    
+    #expect(
+      result.graph.prettyPrint() == """
+        StateStructTests.MyState {
+          optional_int-(1)
+        }
+        """
+    )
+    
+  }
 
   @Test
   func tracking_stored_property() {

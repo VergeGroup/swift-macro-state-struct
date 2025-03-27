@@ -591,6 +591,7 @@ struct MyState {
   var nestedAttached: NestedAttached = .init(name: "")
   
   var optional_custom_type: CustomType?
+  var optional_int: Int?
 
   @Tracking
   struct Nested {

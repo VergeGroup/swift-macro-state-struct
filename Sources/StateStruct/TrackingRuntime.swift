@@ -47,12 +47,12 @@ public enum TrackingRuntime {
     value: Optional<WrappedValue>,
     trackingContext: borrowing _TrackingContext
   ) -> WrappedValue? {
-    
-    guard let value = value else {
-      return nil
-    }
-    
-    return dynamic_processGet(component: component, value: value, trackingContext: trackingContext)
+        
+    return dynamic_processGet(
+      component: component,
+      value: value,
+      trackingContext: trackingContext
+    )
     
   }
 
