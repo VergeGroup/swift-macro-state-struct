@@ -588,6 +588,8 @@ struct MyState {
   }
 
   var nested: Nested = .init(name: "")
+  
+  var nestedUntracked: NestedUntracked = .init(name: "")
   var nestedAttached: NestedAttached = .init(name: "")
   
   var optional_custom_type: CustomType?
@@ -603,6 +605,17 @@ struct MyState {
     var name: String = ""
     var age: Int = 10
   }
+  
+  struct NestedUntracked {
+    
+    init(name: String) {
+      self.name = name
+    }
+    
+    var name: String = ""
+    var age: Int = 10
+  }
+
 
   struct NestedAttached {
     var name: String = ""

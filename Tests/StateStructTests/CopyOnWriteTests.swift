@@ -28,6 +28,28 @@ struct CopyOnWriteTests {
   }
 
   @Test
+  func cow_nested_age() {
+    let original = MyState.init()
+    var copy = original
+
+    copy.nested.age = 25
+
+    #expect(copy.nested.age == 25)
+    #expect(original.nested.age == 10)
+  }
+  
+  @Test
+  func cow_nested_untracked_age() {
+    let original = MyState.init()
+    var copy = original
+    
+    copy.nestedUntracked.age = 25
+    
+    #expect(copy.nestedUntracked.age == 25)
+    #expect(original.nestedUntracked.age == 10)
+  }
+
+  @Test
   func cow_array() {
     let original = MyState.init()
     var copy = original
