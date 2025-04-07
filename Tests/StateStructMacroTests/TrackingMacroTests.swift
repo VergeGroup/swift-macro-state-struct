@@ -15,6 +15,58 @@ final class TrackingMacroTests: XCTestCase {
     }
   }
   
+  func test_primitive() {
+    
+    assertMacro {
+      """
+      @Tracking
+      struct MyState {
+      
+        var int: Int
+      
+        var int_literalOptional: Int?
+      
+        var int_literalOptional_literalOptional: Int??
+      
+        var int_typedOptinal: Optional<Int>
+      
+        var int_typedOptional_typedOptional: Optional<Optional<Int>>
+      
+        var int_typedOptional_literalOptional: Optional<Int?>
+      }
+      """
+    } expansion: {
+      """
+      struct MyState {
+        @PrimitiveTrackingProperty
+
+        var int: Int
+        @PrimitiveTrackingProperty
+
+        var int_literalOptional: Int?
+        @PrimitiveTrackingProperty
+
+        var int_literalOptional_literalOptional: Int??
+        @PrimitiveTrackingProperty
+
+        var int_typedOptinal: Optional<Int>
+        @PrimitiveTrackingProperty
+
+        var int_typedOptional_typedOptional: Optional<Optional<Int>>
+        @PrimitiveTrackingProperty
+
+        var int_typedOptional_literalOptional: Optional<Int?>
+
+        internal var _tracking_context: _TrackingContext = .init()
+      }
+
+      extension MyState: TrackingObject {
+      }
+      """
+    }
+    
+  }
+  
   func test_array_dictionary() {
     assertMacro {
       """

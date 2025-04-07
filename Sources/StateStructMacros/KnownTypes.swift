@@ -105,6 +105,19 @@ enum KnownTypes {
   ]
   
   static func isPrimitiveType(_ typeName: String) -> Bool {
-    primitiveTypes.contains(typeName)
+    
+    if typeName.hasSuffix("?") {
+      let unwrappedTypeName = typeName.replacingOccurrences(of: "?", with: "")      
+      return isPrimitiveType(unwrappedTypeName)
+    }
+    
+    if typeName.hasPrefix("Optional<") && typeName.hasSuffix(">") {
+      let unwrappedTypeName = typeName
+        .replacingOccurrences(of: "Optional<", with: "")
+        .replacingOccurrences(of: ">", with: "")
+      return isPrimitiveType(unwrappedTypeName)
+    }
+    
+    return primitiveTypes.contains(typeName)
   }
 } 
