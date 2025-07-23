@@ -48,7 +48,7 @@ extension TrackingMacro: ExtensionMacro {
 
     return [
       ("""
-      extension \(structDecl.name.trimmed): TrackingObject {      
+      extension \(type): TrackingObject {      
       }
       """ as DeclSyntax).cast(ExtensionDeclSyntax.self)
     ]

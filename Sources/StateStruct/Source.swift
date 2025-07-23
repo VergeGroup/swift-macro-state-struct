@@ -142,6 +142,19 @@ public macro PrimitiveTrackingProperty() =
 
   }
 
+  enum GenericNamespace<T> {
+    @Tracking
+    struct MyState {
+
+      var stored_1: Int = 18
+
+      init() {
+
+      }
+
+    }
+  }
+
   #if canImport(Observation)
     import Observation
 
