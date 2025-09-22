@@ -41,6 +41,9 @@ let package = Package(
       name: "StateStructTests",
       dependencies: [
         "StateStruct"
+      ],
+      swiftSettings: [
+        .unsafeFlags(["-Xfrontend", "-disable-sil-ownership-verifier"])
       ]
     ),
   ],
