@@ -14,7 +14,7 @@ let package = Package(
     ),
   ],
   dependencies: [
-    .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "600.0.0"),
+    .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "602.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-macro-testing.git", from: "0.5.2")
   ],
   targets: [
@@ -41,6 +41,9 @@ let package = Package(
       name: "StateStructTests",
       dependencies: [
         "StateStruct"
+      ],
+      swiftSettings: [
+        .unsafeFlags(["-Xfrontend", "-disable-sil-ownership-verifier"])
       ]
     ),
   ],

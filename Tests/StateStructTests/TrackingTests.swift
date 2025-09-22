@@ -1,5 +1,6 @@
 import StateStruct
 import Testing
+import os.lock
 
 @Suite("TrackingTests")
 struct TrackingTests {
@@ -98,25 +99,33 @@ struct TrackingTests {
     let base = SendableState.init()
     
     do {
-      var a = base.tracked()
-      a.level1.name = "AAA"
-      
+      let lock = OSAllocatedUnfairLock(initialState: base.tracked())
+      lock.withLock { a in
+        a.level1.name = "AAA"
+      }
+
       await Task {
-        a.level1.level2.age = 100
+        lock.withLock { a in
+          a.level1.level2.age = 100
+        }
       }
       .value
-      
-      let level2 = a.level1.level2
-      
+
+      let level2 = lock.withLock { a in
+        a.level1.level2
+      }
+
       await Task {
         _ = level2.name
       }
       .value
-            
-      let result = a.trackingResult!
-      
+
+      let result = lock.withLock { a in
+        a.trackingResult!
+      }
+
       #expect(
-        result.graph.prettyPrint() == 
+        result.graph.prettyPrint() ==
       """
       StateStructTests.SendableState {
         level1-(1)+(2) {
