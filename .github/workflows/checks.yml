@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@v1.1
         with:
-          xcode-version: "16.2"
+          xcode-version: "26"
       - uses: actions/checkout@v2
       - name: Run Test
         run: swift test
